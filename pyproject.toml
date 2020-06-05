@@ -6,6 +6,8 @@ authors = ["Evgeny Kemerov <eskemerov@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
+pyppeteer = "^0.2.2"
+structlog = "^20.1.0"
 loguru = "^0.5.0"
 
 [tool.poetry.dev-dependencies]

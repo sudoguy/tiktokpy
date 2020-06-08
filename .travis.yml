@@ -1,0 +1,70 @@
+language: python
+
+os:
+  - linux
+
+stages:
+  - lint
+  - test
+  # - name: deploy
+  #   if: tag IS present
+
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+  - "nightly"
+  - "pypy3"
+
+install:
+  - pip install --upgrade pip
+
+script: skip
+
+jobs:
+  include:
+    - stage: lint
+      install:
+        - pip install pre-commit
+        - pre-commit install-hooks
+      script:
+        - pre-commit run --all-files
+    - stage: test
+      install:
+        - pip install --pre poetry
+        - poetry install -v
+      script:
+        - poetry run pytest
+    - stage: deploy
+      script:
+        - echo Deploying to PyPI...
+
+before_deploy:
+  - pip install --upgrade pip
+  - pip install poetry
+  - poetry config http-basic.pypi $PYPI_USER $PYPI_PASSWORD
+  - poetry build
+
+deploy:
+  provider: script
+  script: poetry publish
+  skip_cleanup: true
+  on:
+    all_branches: true  # Travis recognizes tag names as "branches"
+    condition: $TRAVIS_BUILD_STAGE_NAME = Deploy
+    repo: sudoguy/tiktok_bot
+    tags: true
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+
+cache:
+  pip: true
+  directories:
+    - "$HOME/.cache/pre-commit"
+    - .venv

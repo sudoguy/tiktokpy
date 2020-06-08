@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 from urllib.parse import urljoin
 
@@ -31,16 +32,28 @@ class Client:
 
     async def trending(self):
         logger.debug('Request "Trending" page')
-        _ = await self.goto("/trending", options={"waitUntil": "networkidle0"})
+
+        async def catch_response(response, fut):
+            if "/item_list" in response.url:
+                logger.debug(await response.json())
+                fut.set_result(await response.json())
+
+        response = asyncio.get_event_loop().create_future()
+
+        self.page.on("response", lambda res: asyncio.create_task(catch_response(res, response)))
+        _ = await self.goto("/trending", options={"waitUntil": "networkidle0", "timeout": 0})
         logger.debug('Got response from "Trending" page')
+        # wait trending response json from puppeteer
+        response: dict = await response
+        logger.debug("Got trending json response from Puppeteer")
 
-        htmls = await self.page.JJeval(
-            selector=".video-feed-item",
-            pageFunction="elements => elements.map((el) => el.innerHTML)",
-        )
-        logger.info(f"Found {len(htmls)} trending items")
+        # htmls = await self.page.JJeval(
+        #     selector=".video-feed-item",
+        #     pageFunction="elements => elements.map((el) => el.innerHTML)",
+        # )
+        logger.info(f"Found {len(response['items'])} trending items")
 
-        return htmls
+        return response["items"]
 
     async def screenshot(self, path: str, page=None):
         if not page:

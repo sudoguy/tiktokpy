@@ -2,12 +2,12 @@ import sys
 import typing
 from datetime import datetime
 from types import TracebackType
+from typing import List
 
 from loguru import logger
 
 from tiktokpy.client import Client
-from tiktokpy.models.trending import FeedItems
-from tiktokpy.parsers.trending import FeedItemsParser
+from tiktokpy.models.trending import FeedItem, FeedItems
 
 
 class TikTokPy:
@@ -32,12 +32,11 @@ class TikTokPy:
         logger.debug("Browser successfully closed")
         logger.info("TikTokPy stopped working..")
 
-    async def trending(self):
+    async def trending(self) -> List[FeedItem]:
         logger.info("Getting trending items")
-        htmls = await self.client.trending()
-        body = FeedItemsParser(htmls).loads()
+        items = await self.client.trending()
 
-        _trending = FeedItems(__root__=body)
+        _trending = FeedItems(__root__=items)
 
         return _trending.__root__
 

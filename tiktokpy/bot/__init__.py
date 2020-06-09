@@ -1,3 +1,4 @@
+import logging
 import sys
 import typing
 from datetime import datetime
@@ -7,14 +8,14 @@ from typing import List
 from loguru import logger
 
 from tiktokpy.client import Client
-from tiktokpy.models.trending import FeedItem, FeedItems
+from tiktokpy.models.feed import FeedItem, FeedItems
 
 
 class TikTokPy:
     def __init__(self):
         logger.remove()
-        logger.add(sys.stdout, level="DEBUG")
-        logger.info("TikTokPy initialized")
+        logger.add(sys.stdout, level=logging.INFO)
+        logger.info("🥳TikTokPy initialized")
 
     async def __aenter__(self):
         await self._init_bot()
@@ -27,14 +28,16 @@ class TikTokPy:
         exc_value: BaseException = None,
         traceback: TracebackType = None,
     ) -> None:
-        logger.debug("Trying to close browser..")
-        await self.client.browser.close()
-        logger.debug("Browser successfully closed")
-        logger.info("TikTokPy stopped working..")
+        logger.debug("🤔Trying to close browser..")
 
-    async def trending(self) -> List[FeedItem]:
-        logger.info("Getting trending items")
-        items = await self.client.trending()
+        await self.client.browser.close()
+
+        logger.debug("✋Browser successfully closed")
+        logger.info("✋TikTokPy stopped working..")
+
+    async def trending(self, amount: int = 50) -> List[FeedItem]:
+        logger.info("📈Getting trending items")
+        items = await self.client.trending(amount)
 
         _trending = FeedItems(__root__=items)
 

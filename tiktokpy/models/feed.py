@@ -25,7 +25,7 @@ class MusicInfo(BaseModel):
     link: HttpUrl
     author_name: str
     is_original: bool
-    cover: HttpUrl
+    cover: str = ""
 
     class Config:
         fields = {

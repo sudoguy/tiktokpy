@@ -1,11 +1,15 @@
 import asyncio
 from pathlib import Path
+from typing import List
 from urllib.parse import urljoin
 
 from loguru import logger
 from pyppeteer import launch
 from pyppeteer.browser import Browser
 from pyppeteer.page import Page, Response
+from tqdm import tqdm
+
+from tiktokpy.utils.client import block_resources, catch_response_and_store
 
 
 class Client:
@@ -14,13 +18,19 @@ class Client:
 
     async def init_browser(self):
         params = {
-            "headless": False,
-            "args": ["--no-sandbox", "--disable-setuid-sandbox"],
+            "headless": True,
+            "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
         }
 
         self.browser: Browser = await launch(**params)
-        logger.debug(f"Browser launched. Options: {params}")
+        logger.debug(f"🎉Browser launched. Options: {params}")
         self.page: Page = await self.browser.newPage()
+
+        await self.page.setRequestInterception(True)
+        self.page.on(
+            "request",
+            lambda req: asyncio.create_task(block_resources(req, ["resources", "image"])),
+        )
 
     async def goto(self, url: str, page=None, *args, **kwargs) -> Response:
         if not page:
@@ -30,30 +40,46 @@ class Client:
 
         return await page.goto(full_url, *args, **kwargs)
 
-    async def trending(self):
-        logger.debug('Request "Trending" page')
+    async def trending(self, amount: int):
+        logger.debug('📨Request "Trending" page')
 
-        async def catch_response(response, fut):
-            if "/item_list" in response.url:
-                logger.debug(await response.json())
-                fut.set_result(await response.json())
+        result: List[dict] = []
 
-        response = asyncio.get_event_loop().create_future()
+        pbar = tqdm(total=amount, desc="📈Getting trending")
 
-        self.page.on("response", lambda res: asyncio.create_task(catch_response(res, response)))
+        self.page.on(
+            "response", lambda res: asyncio.create_task(catch_response_and_store(res, result)),
+        )
         _ = await self.goto("/trending", options={"waitUntil": "networkidle0", "timeout": 0})
-        logger.debug('Got response from "Trending" page')
-        # wait trending response json from puppeteer
-        response: dict = await response
-        logger.debug("Got trending json response from Puppeteer")
+        logger.debug('📭Got response from "Trending" page')
 
-        # htmls = await self.page.JJeval(
-        #     selector=".video-feed-item",
-        #     pageFunction="elements => elements.map((el) => el.innerHTML)",
-        # )
-        logger.info(f"Found {len(response['items'])} trending items")
+        while len(result) < amount:
 
-        return response["items"]
+            logger.debug("🖱Trying to scroll to last video item")
+            await self.page.evaluate(
+                """
+                document.querySelector('.video-feed-item:last-child')
+                    .scrollIntoView();
+            """,
+            )
+
+            elements = await self.page.JJ(".video-feed-item")
+            logger.debug(f"🔎Found {len(elements)} items for clear")
+
+            pbar.n = min(len(result), amount)
+            pbar.update()
+
+            if len(elements) < 150:
+                logger.debug("🔻Too less for clearing page")
+                continue
+
+            await self.page.JJeval(
+                ".video-feed-item:not(:last-child)",
+                pageFunction="(elements) => elements.forEach(el => el.remove())",
+            )
+            logger.debug(f"🎉Cleaned {len(elements) - 1} items from page")
+
+        return result[:amount]
 
     async def screenshot(self, path: str, page=None):
         if not page:

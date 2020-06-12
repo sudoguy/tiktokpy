@@ -22,8 +22,8 @@ class AuthorInfo(BaseModel):
 class MusicInfo(BaseModel):
     id: str
     title: str
-    link: HttpUrl
-    author_name: str
+    link: str = ""
+    author_name: str = ""
     is_original: bool
     cover: str = ""
 

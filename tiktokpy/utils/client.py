@@ -3,8 +3,16 @@ from typing import List
 from loguru import logger
 
 
-async def block_resources(request, types: List[str]):
+async def block_resources_and_sentry(request, types: List[str]):
+    is_blocked = False
+
     if request.resourceType in types:
+        is_blocked = True
+
+    if "/sentry/" in request.url:
+        is_blocked = True
+
+    if is_blocked:
         await request.abort()
     else:
         await request.continue_()
@@ -17,4 +25,4 @@ async def catch_response_and_store(response, result):
 
         for item in data["items"]:
             result.append(item)
-        logger.debug(f"🛒Collected {len(data['items'])} items. Total: {len(result)}")
+        logger.debug(f"🛒 Collected {len(data['items'])} items. Total: {len(result)}")

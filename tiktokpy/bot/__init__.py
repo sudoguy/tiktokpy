@@ -8,14 +8,16 @@ from typing import List
 from loguru import logger
 
 from tiktokpy.client import Client
+from tiktokpy.client.trending import Trending
 from tiktokpy.models.feed import FeedItem, FeedItems
 
 
 class TikTokPy:
     def __init__(self):
+        logging.disable(logging.CRITICAL)
         logger.remove()
         logger.add(sys.stdout, level=logging.INFO)
-        logger.info("🥳TikTokPy initialized")
+        logger.info("🥳 TikTokPy initialized")
 
     async def __aenter__(self):
         await self._init_bot()
@@ -32,13 +34,14 @@ class TikTokPy:
 
         await self.client.browser.close()
 
-        logger.debug("✋Browser successfully closed")
-        logger.info("✋TikTokPy stopped working..")
+        logger.debug("✋ Browser successfully closed")
+        logger.info("✋ TikTokPy stopped working..")
 
     async def trending(self, amount: int = 50) -> List[FeedItem]:
-        logger.info("📈Getting trending items")
-        items = await self.client.trending(amount)
+        logger.info("📈 Getting trending items")
+        items = await Trending(client=self.client).feed(amount=amount, lang="ru")
 
+        logger.info(f"📹 Found {len(items)} videos")
         _trending = FeedItems(__root__=items)
 
         return _trending.__root__

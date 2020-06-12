@@ -11,6 +11,7 @@ loguru = "^0.5.0"
 pydantic = "^1.5.1"
 parsel = "^1.6.0"
 tqdm = "^4.46.1"
+pyppeteer_stealth = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

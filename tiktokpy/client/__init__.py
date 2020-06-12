@@ -7,6 +7,7 @@ from loguru import logger
 from pyppeteer import launch
 from pyppeteer.browser import Browser
 from pyppeteer.page import Page, Response
+from pyppeteer_stealth import stealth
 
 from tiktokpy.utils.client import block_resources_and_sentry
 
@@ -18,12 +19,19 @@ class Client:
     async def init_browser(self):
         params = {
             "headless": True,
-            "args": ["--disable-dev-shm-usage"],
+            "args": [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-web-security",
+            ],
         }
 
         self.browser: Browser = await launch(**params)
         logger.debug(f"🎉 Browser launched. Options: {params}")
         self.page: Page = await self.browser.newPage()
+
+        await stealth(self.page)
 
         await self.page.setRequestInterception(True)
         self.page.on(

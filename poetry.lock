@@ -873,6 +873,14 @@ urllib3 = ">=1.25.8,<2.0.0"
 websockets = ">=8.1,<9.0"
 
 [[package]]
+category = "main"
+description = "pyppeteer stealth"
+name = "pyppeteer-stealth"
+optional = false
+python-versions = "*"
+version = "1.0.0"
+
+[[package]]
 category = "dev"
 description = "pytest: simple powerful testing with Python"
 name = "pytest"
@@ -1102,7 +1110,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "d588d2f685bb76acb87886886b7f5a79d153d6c02b99d00ff4aa953ec46f3d3f"
+content-hash = "cb4c635649d136014dc7a2e8e22d43f4be1a589ce56377f5c042460e9446ddcb"
 python-versions = "^3.6.1"
 
 [metadata.files]
@@ -1502,6 +1510,9 @@ pyparsing = [
 pyppeteer = [
     {file = "pyppeteer-0.2.2-py3-none-any.whl", hash = "sha256:27d1f1a54e233428b4de3489d516db7d4805f67442bb77a7718cc04d7a40debb"},
     {file = "pyppeteer-0.2.2.tar.gz", hash = "sha256:153c62666fe1d55b3941d1634733c02cafb47188fcf282987371e863d58f22e9"},
+]
+pyppeteer-stealth = [
+    {file = "pyppeteer_stealth-1.0.0.tar.gz", hash = "sha256:f97a32db08c779b62179d33a87c6478cc19da93265520fa4d13da4ae117230ee"},
 ]
 pytest = [
     {file = "pytest-5.4.3-py3-none-any.whl", hash = "sha256:5c0db86b698e8f170ba4582a492248919255fcd4c79b1ee64ace34301fb589a1"},

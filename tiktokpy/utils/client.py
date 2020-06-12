@@ -26,3 +26,14 @@ async def catch_response_and_store(response, result):
         for item in data["items"]:
             result.append(item)
         logger.debug(f"🛒 Collected {len(data['items'])} items. Total: {len(result)}")
+
+
+async def catch_user_info(response, queue):
+    if "/user/detail" in response.url:
+        logger.debug(response.url)
+        data = await response.json()
+
+        result = data["userInfo"]
+
+        await queue.put(result)
+        logger.debug(f"🛒 Collected <b>@{result['user']['uniqueId']}</b> info")

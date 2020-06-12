@@ -9,6 +9,7 @@ from loguru import logger
 
 from tiktokpy.client import Client
 from tiktokpy.client.trending import Trending
+from tiktokpy.client.user import User
 from tiktokpy.models.feed import FeedItem, FeedItems
 
 
@@ -40,6 +41,16 @@ class TikTokPy:
     async def trending(self, amount: int = 50) -> List[FeedItem]:
         logger.info("📈 Getting trending items")
         items = await Trending(client=self.client).feed(amount=amount, lang="ru")
+
+        logger.info(f"📹 Found {len(items)} videos")
+        _trending = FeedItems(__root__=items)
+
+        return _trending.__root__
+
+    async def user_feed(self, username: str, amount: int = 50) -> List[FeedItem]:
+        username = f"@{username.lstrip('@')}"
+        logger.info(f"📈 Getting {username} feed")
+        items = await User(client=self.client).feed(username=username, amount=amount)
 
         logger.info(f"📹 Found {len(items)} videos")
         _trending = FeedItems(__root__=items)

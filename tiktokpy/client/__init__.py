@@ -29,29 +29,25 @@ class Client:
 
         self.browser: Browser = await launch(**params)
         logger.debug(f"🎉 Browser launched. Options: {params}")
-        self.page: Page = await self.browser.newPage()
 
-        await stealth(self.page)
+    async def new_page(self, block_media: bool = True) -> Page:
+        page: Page = await self.browser.newPage()
+        await stealth(page)
 
-        await self.page.setRequestInterception(True)
-        self.page.on(
-            "request",
-            lambda req: asyncio.create_task(
-                block_resources_and_sentry(req, ["media", "image", "font"]),
-            ),
-        )
+        if block_media:
+            await page.setRequestInterception(True)
+            page.on(
+                "request",
+                lambda req: asyncio.create_task(
+                    block_resources_and_sentry(req, ["media", "image", "font"]),
+                ),
+            )
+
+        return page
 
     async def goto(
-        self,
-        url: str,
-        query_params: Optional[dict] = None,
-        page: Optional[Page] = None,
-        *args,
-        **kwargs,
+        self, url: str, page: Page, query_params: Optional[dict] = None, *args, **kwargs,
     ) -> Response:
-        if not page:
-            page = self.page
-
         full_url = urljoin(self.base_url, url)
 
         if query_params:
@@ -60,10 +56,7 @@ class Client:
 
         return await page.goto(full_url, *args, **kwargs)
 
-    async def screenshot(self, path: str, page=None):
-        if not page:
-            page = self.page
-
+    async def screenshot(self, path: str, page: Page):
         Path(path).parent.mkdir(parents=True, exist_ok=True)
 
         await page.screenshot({"path": path})

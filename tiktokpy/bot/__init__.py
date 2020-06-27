@@ -67,8 +67,8 @@ class TikTokPy:
 
         return self
 
-    async def screenshot(self, name=None):
+    async def screenshot(self, page, name=None):
         if not name:
             name = datetime.now()
 
-        await self.client.screenshot(f"screenshots/{name}.png")
+        await self.client.screenshot(path=f"screenshots/{name}.png", page=page)

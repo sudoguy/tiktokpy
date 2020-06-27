@@ -25,7 +25,7 @@ class Trending:
             "response", lambda res: asyncio.create_task(catch_response_and_store(res, result)),
         )
         _ = await self.client.goto(
-            "/trending", params={"lang": lang}, page=page, options={"waitUntil": "networkidle0"},
+            "/foryou", params={"lang": lang}, page=page, options={"waitUntil": "networkidle0"},
         )
         logger.debug('📭 Got response from "Trending" page')
 
@@ -34,7 +34,7 @@ class Trending:
             logger.debug("🖱 Trying to scroll to last video item")
             await page.evaluate(
                 """
-                document.querySelector('.video-feed-item:last-child')
+                document.querySelector('.video-feed-container > .lazyload-wrapper:last-child')
                     .scrollIntoView();
             """,
             )
@@ -51,7 +51,7 @@ class Trending:
                 continue
 
             await page.JJeval(
-                ".video-feed-item:not(:last-child)",
+                ".video-feed-container > .lazyload-wrapper:not(:last-child)",
                 pageFunction="(elements) => elements.forEach(el => el.remove())",
             )
             logger.debug(f"🎉 Cleaned {len(elements) - 1} items from page")

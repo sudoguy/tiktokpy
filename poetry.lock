@@ -392,7 +392,7 @@ description = "A Python utility / library to sort Python imports."
 name = "isort"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "5.0.7"
+version = "5.0.9"
 
 [package.extras]
 pipfile_deprecated_finder = ["pipreqs", "requirementslib", "tomlkit (>=0.5.3)"]
@@ -1116,7 +1116,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 html = ["parsel"]
 
 [metadata]
-content-hash = "29391c96f8808652cd41d8293bc618133ef6b86adc9c6d04e4c846528fd78470"
+content-hash = "e6e3f3a82a51d78a652006b9e503be070e293283d313981abbf704de6bccebf1"
 python-versions = "^3.6.1"
 
 [metadata.files]
@@ -1288,8 +1288,8 @@ ipython-genutils = [
     {file = "ipython_genutils-0.2.0.tar.gz", hash = "sha256:eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8"},
 ]
 isort = [
-    {file = "isort-5.0.7-py3-none-any.whl", hash = "sha256:46bd31573158ac69e598a2ab14b207e6a43a2b2872009d2ad0f62f179876037a"},
-    {file = "isort-5.0.7.tar.gz", hash = "sha256:6bc0b408d7c62e331d355085914dd28fd352635f6babd5e4605702ff3b6d9c09"},
+    {file = "isort-5.0.9-py3-none-any.whl", hash = "sha256:3d8e0d7678b66af1e3a6936f2a380a5d4f3faf4b1b38c6aaa4bed6695c6bdcde"},
+    {file = "isort-5.0.9.tar.gz", hash = "sha256:639b8084644ceb13a806f42d690273b9d844793ac2f515fbc575ba65dc044de0"},
 ]
 jedi = [
     {file = "jedi-0.17.1-py2.py3-none-any.whl", hash = "sha256:1ddb0ec78059e8e27ec9eb5098360b4ea0a3dd840bedf21415ea820c21b40a22"},

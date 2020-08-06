@@ -38,9 +38,9 @@ class TikTokPy:
         logger.debug("✋ Browser successfully closed")
         logger.info("✋ TikTokPy stopped working..")
 
-    async def trending(self, amount: int = 50) -> List[FeedItem]:
+    async def trending(self, amount: int = 50, lang: str = "en") -> List[FeedItem]:
         logger.info("📈 Getting trending items")
-        items = await Trending(client=self.client).feed(amount=amount, lang="ru")
+        items = await Trending(client=self.client).feed(amount=amount, lang=lang)
 
         logger.info(f"📹 Found {len(items)} videos")
         _trending = FeedItems(__root__=items)

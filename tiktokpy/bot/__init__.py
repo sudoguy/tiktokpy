@@ -53,9 +53,9 @@ class TikTokPy:
         items = await User(client=self.client).feed(username=username, amount=amount)
 
         logger.info(f"📹 Found {len(items)} videos")
-        _trending = FeedItems(__root__=items)
+        feed = FeedItems(__root__=items)
 
-        return _trending.__root__
+        return feed.__root__
 
     async def _init_bot(self):
         self.client: Client = await Client.create()
@@ -67,8 +67,7 @@ class TikTokPy:
 
         return self
 
-    async def screenshot(self, page, name=None):
-        if not name:
-            name = datetime.now()
+    async def screenshot(self, page, name=""):
+        filename = f"{name}_{datetime.now()}".lstrip("_")
 
-        await self.client.screenshot(path=f"screenshots/{name}.png", page=page)
+        await self.client.screenshot(path=f"screenshots/{filename}.png", page=page)

@@ -7,7 +7,17 @@ from loguru import logger
 from pyppeteer import launch
 from pyppeteer.browser import Browser
 from pyppeteer.page import Page, Response
-from pyppeteer_stealth import stealth
+from pyppeteer_stealth import (
+    console_debug,
+    iframe_content_window,
+    media_codecs,
+    navigator_permissions,
+    navigator_plugins,
+    navigator_webdriver,
+    user_agent,
+    webgl_vendor,
+    window_outerdimensions,
+)
 
 from tiktokpy.utils.client import block_resources_and_sentry
 
@@ -30,9 +40,22 @@ class Client:
         self.browser: Browser = await launch(**params)
         logger.debug(f"🎉 Browser launched. Options: {params}")
 
+    async def stealth(self, page: Page):
+        await console_debug(page)
+        await iframe_content_window(page)
+        await navigator_permissions(page)
+        await navigator_plugins(page)
+        await navigator_webdriver(page)
+        await user_agent(page)
+        await webgl_vendor(page)
+        await window_outerdimensions(page)
+        await media_codecs(page)
+
     async def new_page(self, block_media: bool = True) -> Page:
         page: Page = await self.browser.newPage()
-        await stealth(page)
+
+        # set stealth mode for tiktok
+        await self.stealth(page)
 
         if block_media:
             await page.setRequestInterception(True)

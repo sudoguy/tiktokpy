@@ -1,6 +1,6 @@
 from typing import List
 
-from loguru import logger
+from tiktokpy.utils.logger import logger
 
 
 async def block_resources_and_sentry(request, types: List[str]):

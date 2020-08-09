@@ -1,11 +1,11 @@
 import asyncio
 from typing import List
 
-from loguru import logger
 from tqdm import tqdm
 
 from tiktokpy.client import Client
 from tiktokpy.utils.client import catch_response_and_store
+from tiktokpy.utils.logger import logger
 
 
 class Trending:
@@ -13,7 +13,7 @@ class Trending:
         self.client = client
 
     async def feed(self, amount: int, lang: str = "en"):
-        page = await self.client.new_page()
+        page = await self.client.new_page(blocked_resources=["media", "image", "font"])
 
         logger.debug('📨 Request "Trending" page')
 

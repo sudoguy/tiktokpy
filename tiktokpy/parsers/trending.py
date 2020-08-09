@@ -1,7 +1,8 @@
 from typing import Any, Dict, List, Optional, Union
 
-from loguru import logger
 from parsel import Selector
+
+from tiktokpy.utils.logger import logger
 
 
 class FeedItemsParser:

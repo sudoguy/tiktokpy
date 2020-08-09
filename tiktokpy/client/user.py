@@ -1,19 +1,51 @@
 import asyncio
 from typing import List
 
-from loguru import logger
+from pyppeteer.page import Page
 from tqdm import tqdm
 
 from tiktokpy.client import Client
 from tiktokpy.utils.client import catch_response_and_store, catch_user_info
+from tiktokpy.utils.logger import logger
 
 
 class User:
     def __init__(self, client: Client):
         self.client = client
 
+    async def follow(self, username: str):
+        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
+        logger.debug(f"👥 Follow @{username}")
+
+        await self.client.goto(
+            f"/@{username.lstrip('@')}", page=page, options={"waitUntil": "networkidle0"},
+        )
+
+        follow_title: str = await page.Jeval(
+            ".follow-button", pageFunction="element => element.textContent",
+        )
+
+        if follow_title.lower() != "follow":
+            logger.info(f"😏 @{username} already followed")
+            return
+
+        await page.click(".follow-button")
+        # ToDo: need to wait response from follow request
+        await page.waitFor(3_000)
+
+        updated_follow_title: str = await page.Jeval(
+            ".follow-button", pageFunction="element => element.textContent",
+        )
+
+        if updated_follow_title.lower() != "follow":
+            logger.info(f"➕ @{username} followed")
+        else:
+            logger.warning(f"⚠️  @{username} probably not followed")
+
+        await page.close()
+
     async def feed(self, username: str, amount: int):
-        page = await self.client.new_page()
+        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
         logger.debug(f"📨 Request {username} feed")
 
         result: List[dict] = []

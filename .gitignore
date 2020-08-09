@@ -130,4 +130,5 @@ dmypy.json
 
 # TikTokPy
 screenshots
+settings.toml
 demo.py

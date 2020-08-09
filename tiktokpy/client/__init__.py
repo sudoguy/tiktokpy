@@ -1,9 +1,10 @@
 import asyncio
+import json
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 from urllib.parse import urlencode, urljoin
 
-from loguru import logger
+from dynaconf import settings
 from pyppeteer import launch
 from pyppeteer.browser import Browser
 from pyppeteer.page import Page, Response
@@ -20,15 +21,18 @@ from pyppeteer_stealth import (
 )
 
 from tiktokpy.utils.client import block_resources_and_sentry
+from tiktokpy.utils.logger import logger
 
 
 class Client:
     def __init__(self):
-        self.base_url = "https://www.tiktok.com/"
+        self.base_url = settings.BASE_URL
 
-    async def init_browser(self):
+        self.cookies = json.loads(settings.get("COOKIES", "[]"))
+
+    async def init_browser(self, headless: bool):
         params = {
-            "headless": True,
+            "headless": headless,
             "args": [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -51,18 +55,20 @@ class Client:
         await window_outerdimensions(page)
         await media_codecs(page)
 
-    async def new_page(self, block_media: bool = True) -> Page:
+    async def new_page(self, blocked_resources: Optional[List[str]] = None) -> Page:
         page: Page = await self.browser.newPage()
 
         # set stealth mode for tiktok
         await self.stealth(page)
 
-        if block_media:
+        await page.setCookie(*self.cookies)
+
+        if blocked_resources is not None:
             await page.setRequestInterception(True)
             page.on(
                 "request",
                 lambda req: asyncio.create_task(
-                    block_resources_and_sentry(req, ["media", "image", "font"]),
+                    block_resources_and_sentry(req, blocked_resources),
                 ),
             )
 
@@ -85,8 +91,8 @@ class Client:
         await page.screenshot({"path": path})
 
     @classmethod
-    async def create(cls):
+    async def create(cls, headless: bool = True):
         self = Client()
-        await self.init_browser()
+        await self.init_browser(headless=headless)
 
         return self

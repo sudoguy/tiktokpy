@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tiktokpy"
-version = "0.4.2"
+version = "0.5.0"
 description = ""
 authors = ["Evgeny Kemerov <eskemerov@gmail.com>"]
 

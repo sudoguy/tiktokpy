@@ -54,7 +54,12 @@ class TikTokPy:
         return _trending.__root__
 
     async def follow(self, username: str):
+        username = f"@{username.lstrip('@')}"
         await User(client=self.client).follow(username=username)
+
+    async def unfollow(self, username: str):
+        username = f"@{username.lstrip('@')}"
+        await User(client=self.client).unfollow(username=username)
 
     async def login_session(self):
         await Login().manual_login()

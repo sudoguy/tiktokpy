@@ -15,7 +15,7 @@ class User:
 
     async def follow(self, username: str):
         page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
-        logger.debug(f"👥 Follow @{username}")
+        logger.debug(f"👥 Follow {username}")
 
         await self.client.goto(
             f"/@{username.lstrip('@')}", page=page, options={"waitUntil": "networkidle0"},
@@ -26,7 +26,7 @@ class User:
         )
 
         if follow_title.lower() != "follow":
-            logger.info(f"😏 @{username} already followed")
+            logger.info(f"😏 {username} already followed")
             return
 
         await page.click(".follow-button")
@@ -38,9 +38,40 @@ class User:
         )
 
         if updated_follow_title.lower() != "follow":
-            logger.info(f"➕ @{username} followed")
+            logger.info(f"➕ {username} followed")
         else:
-            logger.warning(f"⚠️  @{username} probably not followed")
+            logger.warning(f"⚠️  {username} probably not followed")
+
+        await page.close()
+
+    async def unfollow(self, username: str):
+        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
+        logger.debug(f"👥 Unfollow {username}")
+
+        await self.client.goto(
+            f"/@{username.lstrip('@')}", page=page, options={"waitUntil": "networkidle0"},
+        )
+
+        follow_title: str = await page.Jeval(
+            ".follow-button", pageFunction="element => element.textContent",
+        )
+
+        if follow_title.lower() != "following":
+            logger.info(f"😏 {username} already unfollowed")
+            return
+
+        await page.click(".follow-button")
+        # ToDo: need to wait response from unfollow request
+        await page.waitFor(3_000)
+
+        updated_follow_title: str = await page.Jeval(
+            ".follow-button", pageFunction="element => element.textContent",
+        )
+
+        if updated_follow_title.lower() == "follow":
+            logger.info(f"➖ {username} unfollowed")
+        else:
+            logger.warning(f"⚠️  {username} probably not unfollowed")
 
         await page.close()
 

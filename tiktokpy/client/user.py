@@ -89,7 +89,7 @@ class User:
         page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
         logger.debug(f"👥 Follow {username}")
 
-        logger.info(f"🧭 Going to @{username}'s page for following")
+        logger.info(f"🧭 Going to {username}'s page for following")
 
         await self.client.goto(
             f"/@{username.lstrip('@')}", page=page, options={"waitUntil": "networkidle0"},
@@ -122,7 +122,7 @@ class User:
         page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
         logger.debug(f"👥 Unfollow {username}")
 
-        logger.info(f"🧭 Going to @{username}'s page for unfollowing")
+        logger.info(f"🧭 Going to {username}'s page for unfollowing")
 
         await self.client.goto(
             f"/@{username.lstrip('@')}", page=page, options={"waitUntil": "networkidle0"},
@@ -174,7 +174,7 @@ class User:
         await page.waitForSelector(".video-feed-item", options={"visible": True})
 
         user_info = await user_info_queue.get()
-        user_video_count = user_info["stats"]["videoCount"]
+        user_video_count = user_info["userInfo"]["stats"]["videoCount"]
 
         if user_video_count < amount:
             logger.info(

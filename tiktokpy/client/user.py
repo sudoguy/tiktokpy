@@ -5,7 +5,7 @@ from pyppeteer.page import Page
 from tqdm import tqdm
 
 from tiktokpy.client import Client
-from tiktokpy.utils.client import catch_response_and_store, catch_user_info
+from tiktokpy.utils.client import catch_response_and_store, catch_response_info
 from tiktokpy.utils.logger import logger
 
 
@@ -13,9 +13,83 @@ class User:
     def __init__(self, client: Client):
         self.client = client
 
+    async def like(self, username: str, video_id: str):
+        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
+        logger.debug(f"👥 Like video id {video_id} of @{username}")
+
+        like_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+
+        page.on(
+            "response",
+            lambda res: asyncio.create_task(
+                catch_response_info(res, like_info_queue, "/commit/item/digg"),
+            ),
+        )
+
+        logger.info(f"🧭 Going to @{username}'s video {video_id} page for like")
+
+        await self.client.goto(
+            f"/@{username}/video/{video_id}", page=page, options={"waitUntil": "networkidle0"},
+        )
+
+        like_element = await page.J("span.like")
+
+        if "liked" in like_element._remoteObject["description"]:
+            logger.info(f"😏 @{username}'s video {video_id} already liked")
+            return
+
+        await page.click(".like-part")
+
+        like_info = await like_info_queue.get()
+
+        if like_info["status_code"] == 0:
+            logger.info(f"👍 @{username}'s video {video_id} liked")
+        else:
+            logger.warning(f"⚠️  @{username}'s video {video_id} probably not liked")
+
+        await page.close()
+
+    async def unlike(self, username: str, video_id: str):
+        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
+        logger.debug(f"👥 Unlike video id {video_id} of @{username}")
+
+        like_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+
+        page.on(
+            "response",
+            lambda res: asyncio.create_task(
+                catch_response_info(res, like_info_queue, "/commit/item/digg"),
+            ),
+        )
+
+        logger.info(f"🧭 Going to @{username}'s video {video_id} page for unlike")
+
+        await self.client.goto(
+            f"/@{username}/video/{video_id}", page=page, options={"waitUntil": "networkidle0"},
+        )
+
+        like_element = await page.J("span.like")
+
+        if "liked" not in like_element._remoteObject["description"]:
+            logger.info(f"😏 @{username}'s video {video_id} already unliked")
+            return
+
+        await page.click(".like-part")
+
+        like_info = await like_info_queue.get()
+
+        if like_info["status_code"] == 0:
+            logger.info(f"👍 @{username}'s video {video_id} unliked")
+        else:
+            logger.warning(f"⚠️  @{username}'s video {video_id} probably not unliked")
+
+        await page.close()
+
     async def follow(self, username: str):
         page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
         logger.debug(f"👥 Follow {username}")
+
+        logger.info(f"🧭 Going to @{username}'s page for following")
 
         await self.client.goto(
             f"/@{username.lstrip('@')}", page=page, options={"waitUntil": "networkidle0"},
@@ -47,6 +121,8 @@ class User:
     async def unfollow(self, username: str):
         page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
         logger.debug(f"👥 Unfollow {username}")
+
+        logger.info(f"🧭 Going to @{username}'s page for unfollowing")
 
         await self.client.goto(
             f"/@{username.lstrip('@')}", page=page, options={"waitUntil": "networkidle0"},
@@ -87,7 +163,10 @@ class User:
         )
 
         page.on(
-            "response", lambda res: asyncio.create_task(catch_user_info(res, user_info_queue)),
+            "response",
+            lambda res: asyncio.create_task(
+                catch_response_info(res, user_info_queue, "/user/detail"),
+            ),
         )
         _ = await self.client.goto(f"/{username}", page=page, options={"waitUntil": "networkidle0"})
         logger.debug(f"📭 Got {username} feed")

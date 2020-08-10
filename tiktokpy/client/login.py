@@ -12,7 +12,7 @@ class Login:
         client = await Client.create(headless=False)
         page = await client.new_page()
 
-        await self.client.stealth(page)
+        await client.stealth(page)
 
         await client.goto("/login", page)
         await page.waitForSelector(".profile", options={"timeout": 0})
@@ -23,7 +23,9 @@ class Login:
         await page.click(".profile-actions > li:first-child")
         await page.waitForSelector(".share-title", options={"timeout": 0})
 
-        username = await page.Jeval(".share-title", pageFunction="element => element.textContent")
+        username = await page.Jeval(
+            ".share-title", pageFunction="element => element.textContent",
+        ).strip()
         sub_title = await page.Jeval(
             ".share-sub-title", pageFunction="element => element.textContent",
         )

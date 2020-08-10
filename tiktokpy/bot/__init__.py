@@ -3,6 +3,7 @@ from datetime import datetime
 from types import TracebackType
 from typing import List, Optional
 
+import humanize
 from dynaconf import settings
 
 from tiktokpy.client import Client
@@ -16,6 +17,8 @@ from tiktokpy.utils.settings import load_or_create_settings
 
 class TikTokPy:
     def __init__(self, settings_path: Optional[str] = None):
+        self.started_at = datetime.now()
+
         init_logger()
         load_or_create_settings(path=settings_path)
 
@@ -42,7 +45,10 @@ class TikTokPy:
         await self.client.browser.close()
 
         logger.debug("✋ Browser successfully closed")
-        logger.info("✋ TikTokPy stopped working..")
+        logger.info(
+            "✋ TikTokPy finished working. Session lasted: {}",
+            humanize.naturaldelta(datetime.now() - self.started_at),
+        )
 
     async def trending(self, amount: int = 50, lang: str = "en") -> List[FeedItem]:
         logger.info("📈 Getting trending items")
@@ -56,6 +62,16 @@ class TikTokPy:
     async def follow(self, username: str):
         username = f"@{username.lstrip('@')}"
         await User(client=self.client).follow(username=username)
+
+    async def like(self, feed_item: FeedItem):
+        await User(client=self.client).like(
+            username=feed_item.author.username, video_id=feed_item.id,
+        )
+
+    async def unlike(self, feed_item: FeedItem):
+        await User(client=self.client).unlike(
+            username=feed_item.author.username, video_id=feed_item.id,
+        )
 
     async def unfollow(self, username: str):
         username = f"@{username.lstrip('@')}"

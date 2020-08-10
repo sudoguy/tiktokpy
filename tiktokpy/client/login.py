@@ -23,9 +23,9 @@ class Login:
         await page.click(".profile-actions > li:first-child")
         await page.waitForSelector(".share-title", options={"timeout": 0})
 
-        username = await page.Jeval(
-            ".share-title", pageFunction="element => element.textContent",
-        ).strip()
+        username = await page.Jeval(".share-title", pageFunction="element => element.textContent")
+        username = username.strip()
+
         sub_title = await page.Jeval(
             ".share-sub-title", pageFunction="element => element.textContent",
         )

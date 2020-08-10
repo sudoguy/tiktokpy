@@ -51,7 +51,7 @@ deploy:
   skip_cleanup: true
   on:
     all_branches: true  # Travis recognizes tag names as "branches"
-    condition: $TRAVIS_BUILD_STAGE_NAME = Deploy
+    condition: $TRAVIS_BUILD_STAGE_NAME = deploy
     repo: sudoguy/tiktokpy
     tags: true
 

@@ -7,7 +7,7 @@ authors = ["Evgeny Kemerov <eskemerov@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.6.1"
 pyppeteer = "^0.2.2"
-loguru = "^0.6.0"
+loguru = "^0.5.0"
 pydantic = "^1.6.1"
 tqdm = "^4.48.0"
 pyppeteer-stealth = {git = "https://github.com/MeiK2333/pyppeteer_stealth.git"}

@@ -1,8 +1,29 @@
 [tool.poetry]
 name = "tiktokpy"
 version = "0.7.2"
-description = ""
+description = "Tool for automated TikTok interactions."
+
+license = "MIT"
 authors = ["Evgeny Kemerov <eskemerov@gmail.com>"]
+
+readme = "README.md"
+include = ["LICENSE"]
+
+repository = "https://github.com/sudoguy/tiktokpy/"
+homepage = "https://github.com/sudoguy/tiktokpy/"
+
+keywords = ["tiktok", "bot", "api", "wrapper", "tiktokbot", "tiktokpy", "webapi", "marketing"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 [tool.poetry.scripts]
 tiktok_login = "tiktokpy.cli:app"

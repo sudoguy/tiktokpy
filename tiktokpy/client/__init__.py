@@ -10,6 +10,8 @@ from pyppeteer.browser import Browser
 from pyppeteer.page import Page, Response
 from pyppeteer_stealth import (
     console_debug,
+    iframe_content_window,
+    media_codecs,
     navigator_permissions,
     navigator_plugins,
     navigator_webdriver,
@@ -43,7 +45,9 @@ class Client:
         logger.debug(f"🎉 Browser launched. Options: {params}")
 
     async def stealth(self, page: Page):
+        await iframe_content_window(page)
         await console_debug(page)
+        await media_codecs(page)
         await navigator_permissions(page)
         await navigator_plugins(page)
         await navigator_webdriver(page)

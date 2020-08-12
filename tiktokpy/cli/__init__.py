@@ -11,3 +11,8 @@ app = typer.Typer()
 async def login():
     async with TikTokPy() as bot:
         await bot.login_session()
+
+
+@app.callback()
+def callback():
+    pass

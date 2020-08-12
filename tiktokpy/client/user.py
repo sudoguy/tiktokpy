@@ -89,6 +89,15 @@ class User:
         page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
         logger.debug(f"👥 Follow {username}")
 
+        follow_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+
+        page.on(
+            "response",
+            lambda res: asyncio.create_task(
+                catch_response_info(res, follow_info_queue, "/commit/follow/user"),
+            ),
+        )
+
         logger.info(f"🧭 Going to {username}'s page for following")
 
         await self.client.goto(
@@ -104,14 +113,10 @@ class User:
             return
 
         await page.click(".follow-button")
-        # ToDo: need to wait response from follow request
-        await page.waitFor(3_000)
 
-        updated_follow_title: str = await page.Jeval(
-            ".follow-button", pageFunction="element => element.textContent",
-        )
+        follow_info = await follow_info_queue.get()
 
-        if updated_follow_title.lower() != "follow":
+        if follow_info["status_code"] == 0:
             logger.info(f"➕ {username} followed")
         else:
             logger.warning(f"⚠️  {username} probably not followed")
@@ -121,6 +126,15 @@ class User:
     async def unfollow(self, username: str):
         page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
         logger.debug(f"👥 Unfollow {username}")
+
+        unfollow_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+
+        page.on(
+            "response",
+            lambda res: asyncio.create_task(
+                catch_response_info(res, unfollow_info_queue, "/commit/follow/user"),
+            ),
+        )
 
         logger.info(f"🧭 Going to {username}'s page for unfollowing")
 
@@ -137,14 +151,10 @@ class User:
             return
 
         await page.click(".follow-button")
-        # ToDo: need to wait response from unfollow request
-        await page.waitFor(3_000)
 
-        updated_follow_title: str = await page.Jeval(
-            ".follow-button", pageFunction="element => element.textContent",
-        )
+        unfollow_info = await unfollow_info_queue.get()
 
-        if updated_follow_title.lower() == "follow":
+        if unfollow_info["status_code"] == 0:
             logger.info(f"➖ {username} unfollowed")
         else:
             logger.warning(f"⚠️  {username} probably not unfollowed")

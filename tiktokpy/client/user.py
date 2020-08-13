@@ -18,6 +18,14 @@ class User:
         logger.debug(f"👥 Like video id {video_id} of @{username}")
 
         like_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+        video_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+
+        page.on(
+            "response",
+            lambda res: asyncio.create_task(
+                catch_response_info(res, video_info_queue, "/item/detail"),
+            ),
+        )
 
         page.on(
             "response",
@@ -32,13 +40,13 @@ class User:
             f"/@{username}/video/{video_id}", page=page, options={"waitUntil": "networkidle0"},
         )
 
-        like_element = await page.J("span.like")
+        video_info = await video_info_queue.get()
 
-        if "liked" in like_element._remoteObject["description"]:
+        if video_info["itemInfo"]["itemStruct"]["digged"]:
             logger.info(f"😏 @{username}'s video {video_id} already liked")
             return
 
-        await page.click(".like-part")
+        await page.click(".video-feed-container .lazyload-wrapper:first-child .img-icon-unlike")
 
         like_info = await like_info_queue.get()
 
@@ -54,6 +62,14 @@ class User:
         logger.debug(f"👥 Unlike video id {video_id} of @{username}")
 
         like_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+        video_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+
+        page.on(
+            "response",
+            lambda res: asyncio.create_task(
+                catch_response_info(res, video_info_queue, "/item/detail"),
+            ),
+        )
 
         page.on(
             "response",
@@ -68,18 +84,18 @@ class User:
             f"/@{username}/video/{video_id}", page=page, options={"waitUntil": "networkidle0"},
         )
 
-        like_element = await page.J("span.like")
+        video_info = await video_info_queue.get()
 
-        if "liked" not in like_element._remoteObject["description"]:
+        if not video_info["itemInfo"]["itemStruct"]["digged"]:
             logger.info(f"😏 @{username}'s video {video_id} already unliked")
             return
 
-        await page.click(".like-part")
+        await page.click(".video-feed-container .lazyload-wrapper:first-child .img-icon-liking")
 
         like_info = await like_info_queue.get()
 
         if like_info["status_code"] == 0:
-            logger.info(f"👍 @{username}'s video {video_id} unliked")
+            logger.info(f"👎 @{username}'s video {video_id} unliked")
         else:
             logger.warning(f"⚠️  @{username}'s video {video_id} probably not unliked")
 

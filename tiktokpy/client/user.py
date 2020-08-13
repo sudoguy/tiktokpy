@@ -194,6 +194,8 @@ class User:
             amount = user_video_count
 
         pbar = tqdm(total=amount, desc=f"📈 Getting {username} feed")
+        pbar.n = min(len(result), amount)
+        pbar.refresh()
 
         attempts = 0
         last_result = len(result)

@@ -19,8 +19,6 @@ class Trending:
 
         result: List[dict] = []
 
-        pbar = tqdm(total=amount, desc=f"📈 Getting trending {lang.upper()}")
-
         page.on(
             "response", lambda res: asyncio.create_task(catch_response_and_store(res, result)),
         )
@@ -28,6 +26,10 @@ class Trending:
             "/foryou", params={"lang": lang}, page=page, options={"waitUntil": "networkidle0"},
         )
         logger.debug('📭 Got response from "Trending" page')
+
+        pbar = tqdm(total=amount, desc=f"📈 Getting trending {lang.upper()}")
+        pbar.n = min(len(result), amount)
+        pbar.refresh()
 
         while len(result) < amount:
 

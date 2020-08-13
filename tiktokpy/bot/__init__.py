@@ -17,17 +17,19 @@ from tiktokpy.utils.settings import load_or_create_settings
 
 class TikTokPy:
     def __init__(self, settings_path: Optional[str] = None):
-        self.started_at = datetime.now()
+        from tiktokpy import __version__
 
         init_logger()
+        self.started_at = datetime.now()
+
+        logger.info("🥳 TikTokPy initialized. Version: {}", __version__)
+
         load_or_create_settings(path=settings_path)
 
         if settings.get("COOKIES") and settings.get("USERNAME"):
             logger.info(f"✅ Used cookies of @{settings.USERNAME}")
         else:
             logger.info("🛑 Cookies not found, anonymous mode")
-
-        logger.info("🥳 TikTokPy initialized")
 
     async def __aenter__(self):
         await self._init_bot()

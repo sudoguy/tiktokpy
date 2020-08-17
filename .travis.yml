@@ -5,7 +5,7 @@ os:
 
 stages:
   - lint
-  - test
+  # - test
   - name: deploy
     if: tag IS present
 

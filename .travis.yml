@@ -5,7 +5,7 @@ os:
 
 stages:
   - lint
-  # - test
+  - test
   - name: deploy
     if: tag IS present
 
@@ -29,12 +29,12 @@ jobs:
         - pre-commit install-hooks
       script:
         - pre-commit run --all-files
-    - stage: test
-      install:
-        - pip install poetry
-        - poetry install -v
-      script:
-        - poetry run pytest
+    # - stage: test
+    #   install:
+    #     - pip install poetry
+    #     - poetry install -v
+    #   script:
+    #     - poetry run pytest
     - stage: deploy
       script:
         - echo Deploying to PyPI...

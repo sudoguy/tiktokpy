@@ -46,7 +46,7 @@ class User:
             logger.info(f"😏 @{username}'s video {video_id} already liked")
             return
 
-        await page.click(".video-feed-container .lazyload-wrapper:first-child .img-icon-unlike")
+        await page.click(".video-feed-container .lazyload-wrapper:first-child .bar-item-img")
 
         like_info = await like_info_queue.get()
 
@@ -90,7 +90,7 @@ class User:
             logger.info(f"😏 @{username}'s video {video_id} already unliked")
             return
 
-        await page.click(".video-feed-container .lazyload-wrapper:first-child .img-icon-liking")
+        await page.click(".video-feed-container .lazyload-wrapper:first-child .bar-item-img")
 
         like_info = await like_info_queue.get()
 

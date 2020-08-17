@@ -16,7 +16,7 @@ class Login:
 
         await client.goto("/login", page)
         await page.waitForSelector(".profile", options={"timeout": 0})
-        await page.hover(".avatar")
+        await page.hover(".profile")
 
         await page.waitFor(".profile-actions > li:first-child")
         # going to "View profile" page

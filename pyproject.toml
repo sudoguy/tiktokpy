@@ -46,7 +46,7 @@ html = ["parsel"]
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
 black = "^19.10b0"
-pytest-cov = "^2.7.1"
+pytest-cov = "^2.10.1"
 pytest-mock = "^3.2.0"
 pre-commit = "^2.6.0"
 flake8 = "^3.7.8"

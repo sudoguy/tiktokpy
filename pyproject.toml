@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tiktokpy"
-version = "0.8.4"
+version = "0.8.5"
 description = "Tool for automated TikTok interactions."
 
 license = "MIT"

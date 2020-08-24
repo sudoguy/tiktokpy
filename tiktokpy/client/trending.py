@@ -23,7 +23,10 @@ class Trending:
             "response", lambda res: asyncio.create_task(catch_response_and_store(res, result)),
         )
         _ = await self.client.goto(
-            "/foryou", params={"lang": lang}, page=page, options={"waitUntil": "networkidle0"},
+            "/foryou",
+            query_params={"lang": lang},
+            page=page,
+            options={"waitUntil": "networkidle0"},
         )
         logger.debug('📭 Got response from "Trending" page')
 

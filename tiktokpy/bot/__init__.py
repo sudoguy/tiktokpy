@@ -67,12 +67,14 @@ class TikTokPy:
 
     async def like(self, feed_item: FeedItem):
         await User(client=self.client).like(
-            username=feed_item.author.username, video_id=feed_item.id,
+            username=feed_item.author.username,
+            video_id=feed_item.id,
         )
 
     async def unlike(self, feed_item: FeedItem):
         await User(client=self.client).unlike(
-            username=feed_item.author.username, video_id=feed_item.id,
+            username=feed_item.author.username,
+            video_id=feed_item.id,
         )
 
     async def unfollow(self, username: str):
@@ -106,5 +108,6 @@ class TikTokPy:
         filename = f"{name}_{datetime.now()}".lstrip("_")
 
         await self.client.screenshot(
-            path=f"{settings.HOME_DIR}/screenshots/{filename}.png", page=page,
+            path=f"{settings.HOME_DIR}/screenshots/{filename}.png",
+            page=page,
         )

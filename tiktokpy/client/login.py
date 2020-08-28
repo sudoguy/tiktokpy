@@ -27,7 +27,8 @@ class Login:
         username = username.strip()
 
         sub_title = await page.Jeval(
-            ".share-sub-title", pageFunction="element => element.textContent",
+            ".share-sub-title",
+            pageFunction="element => element.textContent",
         )
 
         logger.info(f"🔑 Logged as @{username} aka {sub_title}")

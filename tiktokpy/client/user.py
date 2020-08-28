@@ -37,7 +37,9 @@ class User:
         logger.info(f"🧭 Going to @{username}'s video {video_id} page for like")
 
         await self.client.goto(
-            f"/@{username}/video/{video_id}", page=page, options={"waitUntil": "networkidle0"},
+            f"/@{username}/video/{video_id}",
+            page=page,
+            options={"waitUntil": "networkidle0"},
         )
 
         video_info = await video_info_queue.get()
@@ -81,7 +83,9 @@ class User:
         logger.info(f"🧭 Going to @{username}'s video {video_id} page for unlike")
 
         await self.client.goto(
-            f"/@{username}/video/{video_id}", page=page, options={"waitUntil": "networkidle0"},
+            f"/@{username}/video/{video_id}",
+            page=page,
+            options={"waitUntil": "networkidle0"},
         )
 
         video_info = await video_info_queue.get()
@@ -117,11 +121,14 @@ class User:
         logger.info(f"🧭 Going to {username}'s page for following")
 
         await self.client.goto(
-            f"/@{username.lstrip('@')}", page=page, options={"waitUntil": "networkidle0"},
+            f"/@{username.lstrip('@')}",
+            page=page,
+            options={"waitUntil": "networkidle0"},
         )
 
         follow_title: str = await page.Jeval(
-            ".follow-button", pageFunction="element => element.textContent",
+            ".follow-button",
+            pageFunction="element => element.textContent",
         )
 
         if follow_title.lower() != "follow":
@@ -155,11 +162,14 @@ class User:
         logger.info(f"🧭 Going to {username}'s page for unfollowing")
 
         await self.client.goto(
-            f"/@{username.lstrip('@')}", page=page, options={"waitUntil": "networkidle0"},
+            f"/@{username.lstrip('@')}",
+            page=page,
+            options={"waitUntil": "networkidle0"},
         )
 
         follow_title: str = await page.Jeval(
-            ".follow-button", pageFunction="element => element.textContent",
+            ".follow-button",
+            pageFunction="element => element.textContent",
         )
 
         if follow_title.lower() != "following":
@@ -185,7 +195,8 @@ class User:
         user_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
 
         page.on(
-            "response", lambda res: asyncio.create_task(catch_response_and_store(res, result)),
+            "response",
+            lambda res: asyncio.create_task(catch_response_and_store(res, result)),
         )
 
         page.on(

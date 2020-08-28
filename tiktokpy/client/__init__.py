@@ -75,7 +75,12 @@ class Client:
         return page
 
     async def goto(
-        self, url: str, page: Page, query_params: Optional[dict] = None, *args, **kwargs,
+        self,
+        url: str,
+        page: Page,
+        query_params: Optional[dict] = None,
+        *args,
+        **kwargs,
     ) -> Response:
         full_url = urljoin(self.base_url, url)
 

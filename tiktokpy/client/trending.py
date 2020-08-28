@@ -20,7 +20,8 @@ class Trending:
         result: List[dict] = []
 
         page.on(
-            "response", lambda res: asyncio.create_task(catch_response_and_store(res, result)),
+            "response",
+            lambda res: asyncio.create_task(catch_response_and_store(res, result)),
         )
         _ = await self.client.goto(
             "/foryou",

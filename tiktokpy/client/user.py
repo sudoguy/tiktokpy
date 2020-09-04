@@ -48,7 +48,14 @@ class User:
             logger.info(f"😏 @{username}'s video {video_id} already liked")
             return
 
-        await page.click(".video-feed-container .lazyload-wrapper:first-child .bar-item-img")
+        like_part = await page.J(".like-part")
+
+        if like_part:
+            await page.click(".like-part")
+        else:
+            await page.click(
+                ".video-feed-container .lazyload-wrapper:first-child .bar-item-wrapper:first-child",
+            )
 
         like_info = await like_info_queue.get()
 
@@ -94,7 +101,14 @@ class User:
             logger.info(f"😏 @{username}'s video {video_id} already unliked")
             return
 
-        await page.click(".video-feed-container .lazyload-wrapper:first-child .bar-item-img")
+        like_part = await page.J(".like-part")
+
+        if like_part:
+            await page.click(".like-part")
+        else:
+            await page.click(
+                ".video-feed-container .lazyload-wrapper:first-child .bar-item-wrapper:first-child",
+            )
 
         like_info = await like_info_queue.get()
 

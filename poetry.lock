@@ -887,7 +887,7 @@ description = "Fast, Extensible Progress Meter"
 name = "tqdm"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
-version = "4.48.2"
+version = "4.49.0"
 
 [package.extras]
 dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
@@ -1268,6 +1268,11 @@ markupsafe = [
     {file = "MarkupSafe-1.1.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:ba59edeaa2fc6114428f1637ffff42da1e311e29382d81b339c1817d37ec93c6"},
     {file = "MarkupSafe-1.1.1-cp37-cp37m-win32.whl", hash = "sha256:b00c1de48212e4cc9603895652c5c410df699856a2853135b3967591e4beebc2"},
     {file = "MarkupSafe-1.1.1-cp37-cp37m-win_amd64.whl", hash = "sha256:9bf40443012702a1d2070043cb6291650a0841ece432556f784f004937f0f32c"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:6788b695d50a51edb699cb55e35487e430fa21f1ed838122d722e0ff0ac5ba15"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:cdb132fc825c38e1aeec2c8aa9338310d29d337bebbd7baa06889d09a60a1fa2"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:13d3144e1e340870b25e7b10b98d779608c02016d5184cfb9927a9f10c689f42"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-win32.whl", hash = "sha256:596510de112c685489095da617b5bcbbac7dd6384aeebeda4df6025d0256a81b"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:e8313f01ba26fbbe36c7be1966a7b7424942f670f38e666995b88d012765b9be"},
     {file = "MarkupSafe-1.1.1.tar.gz", hash = "sha256:29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b"},
 ]
 mccabe = [
@@ -1437,6 +1442,7 @@ regex = [
     {file = "regex-2020.7.14-cp38-cp38-manylinux1_i686.whl", hash = "sha256:5ea81ea3dbd6767873c611687141ec7b06ed8bab43f68fad5b7be184a920dc99"},
     {file = "regex-2020.7.14-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:bbb332d45b32df41200380fff14712cb6093b61bd142272a10b16778c418e98e"},
     {file = "regex-2020.7.14-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:c11d6033115dc4887c456565303f540c44197f4fc1a2bfb192224a301534888e"},
+    {file = "regex-2020.7.14-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:75aaa27aa521a182824d89e5ab0a1d16ca207318a6b65042b046053cfc8ed07a"},
     {file = "regex-2020.7.14-cp38-cp38-win32.whl", hash = "sha256:d6cff2276e502b86a25fd10c2a96973fdb45c7a977dca2138d661417f3728341"},
     {file = "regex-2020.7.14-cp38-cp38-win_amd64.whl", hash = "sha256:7a2dd66d2d4df34fa82c9dc85657c5e019b87932019947faece7983f2089a840"},
     {file = "regex-2020.7.14.tar.gz", hash = "sha256:3a3af27a8d23143c49a3420efe5b3f8cf1a48c6fc8bc6856b03f638abc1833bb"},
@@ -1461,8 +1467,8 @@ tornado = [
     {file = "tornado-6.0.4.tar.gz", hash = "sha256:0fe2d45ba43b00a41cd73f8be321a44936dc1aba233dee979f17a042b83eb6dc"},
 ]
 tqdm = [
-    {file = "tqdm-4.48.2-py2.py3-none-any.whl", hash = "sha256:1a336d2b829be50e46b84668691e0a2719f26c97c62846298dd5ae2937e4d5cf"},
-    {file = "tqdm-4.48.2.tar.gz", hash = "sha256:564d632ea2b9cb52979f7956e093e831c28d441c11751682f84c86fc46e4fd21"},
+    {file = "tqdm-4.49.0-py2.py3-none-any.whl", hash = "sha256:8f3c5815e3b5e20bc40463fa6b42a352178859692a68ffaa469706e6d38342a5"},
+    {file = "tqdm-4.49.0.tar.gz", hash = "sha256:faf9c671bd3fad5ebaeee366949d969dca2b2be32c872a7092a1e1a9048d105b"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:73d785a950fc82dd2a25897d525d003f6378d1cb23ab305578394694202a58c3"},

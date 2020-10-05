@@ -528,7 +528,7 @@ description = "A Material Design theme for MkDocs"
 name = "mkdocs-material"
 optional = false
 python-versions = "*"
-version = "5.5.10"
+version = "6.0.2"
 
 [package.dependencies]
 Pygments = ">=2.4"
@@ -1012,7 +1012,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 html = ["parsel"]
 
 [metadata]
-content-hash = "808e007f22c61d015d3dee649f074953df00fe4e576f4a836bad023217284653"
+content-hash = "ffcbfca83790c3e99f1d34bc45e68e7038015de20fb2676e4f339aeab9bddce4"
 lock-version = "1.0"
 python-versions = "^3.6.1"
 
@@ -1034,7 +1034,6 @@ attrs = [
     {file = "attrs-20.1.0.tar.gz", hash = "sha256:0ef97238856430dcf9228e07f316aefc17e8939fc8507e18c6501b761ef1a42a"},
 ]
 black = [
-    {file = "black-20.8b1-py3-none-any.whl", hash = "sha256:70b62ef1527c950db59062cda342ea224d772abdf6adc58b86a45421bab20a6b"},
     {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
 ]
 bump2version = [
@@ -1268,6 +1267,11 @@ markupsafe = [
     {file = "MarkupSafe-1.1.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:ba59edeaa2fc6114428f1637ffff42da1e311e29382d81b339c1817d37ec93c6"},
     {file = "MarkupSafe-1.1.1-cp37-cp37m-win32.whl", hash = "sha256:b00c1de48212e4cc9603895652c5c410df699856a2853135b3967591e4beebc2"},
     {file = "MarkupSafe-1.1.1-cp37-cp37m-win_amd64.whl", hash = "sha256:9bf40443012702a1d2070043cb6291650a0841ece432556f784f004937f0f32c"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:6788b695d50a51edb699cb55e35487e430fa21f1ed838122d722e0ff0ac5ba15"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:cdb132fc825c38e1aeec2c8aa9338310d29d337bebbd7baa06889d09a60a1fa2"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:13d3144e1e340870b25e7b10b98d779608c02016d5184cfb9927a9f10c689f42"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-win32.whl", hash = "sha256:596510de112c685489095da617b5bcbbac7dd6384aeebeda4df6025d0256a81b"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:e8313f01ba26fbbe36c7be1966a7b7424942f670f38e666995b88d012765b9be"},
     {file = "MarkupSafe-1.1.1.tar.gz", hash = "sha256:29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b"},
 ]
 mccabe = [
@@ -1282,8 +1286,8 @@ mkdocs = [
     {file = "mkdocs-1.1.2.tar.gz", hash = "sha256:f0b61e5402b99d7789efa032c7a74c90a20220a9c81749da06dbfbcbd52ffb39"},
 ]
 mkdocs-material = [
-    {file = "mkdocs-material-5.5.10.tar.gz", hash = "sha256:a490217513b4c8c514183dea7dc1738098eba367fc0de36a09273e065a609c62"},
-    {file = "mkdocs_material-5.5.10-py2.py3-none-any.whl", hash = "sha256:3fc1551083c0fa27ed90a70bac74109e85f78094bf8370bb8ba54499a41d3ab5"},
+    {file = "mkdocs-material-6.0.2.tar.gz", hash = "sha256:1adcb2d1b76b200e26c54b68784a0b3c4cf9bf21efe1c43edf5c59e514b30ef6"},
+    {file = "mkdocs_material-6.0.2-py2.py3-none-any.whl", hash = "sha256:67334845400089e87370661bd0b885ba0cc995920ef1d11259d72300a6b9893f"},
 ]
 mkdocs-material-extensions = [
     {file = "mkdocs-material-extensions-1.0.tar.gz", hash = "sha256:17d7491e189af75700310b7ec33c6c48a22060b8b445001deca040cb60471cde"},
@@ -1437,6 +1441,7 @@ regex = [
     {file = "regex-2020.7.14-cp38-cp38-manylinux1_i686.whl", hash = "sha256:5ea81ea3dbd6767873c611687141ec7b06ed8bab43f68fad5b7be184a920dc99"},
     {file = "regex-2020.7.14-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:bbb332d45b32df41200380fff14712cb6093b61bd142272a10b16778c418e98e"},
     {file = "regex-2020.7.14-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:c11d6033115dc4887c456565303f540c44197f4fc1a2bfb192224a301534888e"},
+    {file = "regex-2020.7.14-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:75aaa27aa521a182824d89e5ab0a1d16ca207318a6b65042b046053cfc8ed07a"},
     {file = "regex-2020.7.14-cp38-cp38-win32.whl", hash = "sha256:d6cff2276e502b86a25fd10c2a96973fdb45c7a977dca2138d661417f3728341"},
     {file = "regex-2020.7.14-cp38-cp38-win_amd64.whl", hash = "sha256:7a2dd66d2d4df34fa82c9dc85657c5e019b87932019947faece7983f2089a840"},
     {file = "regex-2020.7.14.tar.gz", hash = "sha256:3a3af27a8d23143c49a3420efe5b3f8cf1a48c6fc8bc6856b03f638abc1833bb"},

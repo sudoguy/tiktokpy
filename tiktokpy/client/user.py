@@ -18,14 +18,6 @@ class User:
         logger.debug(f"👥 Like video id {video_id} of @{username}")
 
         like_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
-        video_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
-
-        page.on(
-            "response",
-            lambda res: asyncio.create_task(
-                catch_response_info(res, video_info_queue, "/item/detail"),
-            ),
-        )
 
         page.on(
             "response",
@@ -42,20 +34,14 @@ class User:
             options={"waitUntil": "networkidle0"},
         )
 
-        video_info = await video_info_queue.get()
+        like_selector = ".lazyload-wrapper:first-child .item-action-bar.vertical > .bar-item-wrapper:first-child"  # noqa: E501
+        is_liked = await page.J(f'{like_selector} svg[fill="none"]')
 
-        if video_info["itemInfo"]["itemStruct"]["digged"]:
+        if is_liked:
             logger.info(f"😏 @{username}'s video {video_id} already liked")
             return
 
-        like_part = await page.J(".like-part")
-
-        if like_part:
-            await page.click(".like-part")
-        else:
-            await page.click(
-                ".video-feed-container .lazyload-wrapper:first-child .bar-item-wrapper:first-child",
-            )
+        await page.click(like_selector)
 
         like_info = await like_info_queue.get()
 
@@ -71,14 +57,6 @@ class User:
         logger.debug(f"👥 Unlike video id {video_id} of @{username}")
 
         like_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
-        video_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
-
-        page.on(
-            "response",
-            lambda res: asyncio.create_task(
-                catch_response_info(res, video_info_queue, "/item/detail"),
-            ),
-        )
 
         page.on(
             "response",
@@ -95,20 +73,14 @@ class User:
             options={"waitUntil": "networkidle0"},
         )
 
-        video_info = await video_info_queue.get()
+        like_selector = ".lazyload-wrapper:first-child .item-action-bar.vertical > .bar-item-wrapper:first-child"  # noqa: E501
+        is_unliked = await page.J(f'{like_selector} svg[fill="currentColor"]')
 
-        if not video_info["itemInfo"]["itemStruct"]["digged"]:
+        if is_unliked:
             logger.info(f"😏 @{username}'s video {video_id} already unliked")
             return
 
-        like_part = await page.J(".like-part")
-
-        if like_part:
-            await page.click(".like-part")
-        else:
-            await page.click(
-                ".video-feed-container .lazyload-wrapper:first-child .bar-item-wrapper:first-child",
-            )
+        await page.click(like_selector)
 
         like_info = await like_info_queue.get()
 

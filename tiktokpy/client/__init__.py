@@ -9,13 +9,11 @@ from pyppeteer import launch
 from pyppeteer.browser import Browser
 from pyppeteer.page import Page, Response
 from pyppeteer_stealth import (
-    console_debug,
     iframe_content_window,
     media_codecs,
     navigator_permissions,
     navigator_plugins,
     navigator_webdriver,
-    user_agent,
     webgl_vendor,
     window_outerdimensions,
 )
@@ -46,12 +44,10 @@ class Client:
 
     async def stealth(self, page: Page):
         await iframe_content_window(page)
-        await console_debug(page)
         await media_codecs(page)
         await navigator_permissions(page)
         await navigator_plugins(page)
         await navigator_webdriver(page)
-        await user_agent(page)
         await webgl_vendor(page)
         await window_outerdimensions(page)
 
@@ -85,8 +81,8 @@ class Client:
         full_url = urljoin(self.base_url, url)
 
         if query_params:
-            query_params = urlencode(query=query_params)
-            full_url = f"{full_url}?{query_params}"
+            query_params_ = urlencode(query=query_params)
+            full_url = f"{full_url}?{query_params_}"
 
         return await page.goto(full_url, *args, **kwargs)
 

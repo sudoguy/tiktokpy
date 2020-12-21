@@ -15,21 +15,32 @@ class Login:
         await client.stealth(page)
 
         await client.goto("/login", page)
-        await page.waitForSelector(".profile", options={"timeout": 0})
-        await page.hover(".profile")
+        await page.waitForSelector(".menu-right .profile", options={"timeout": 0})
 
-        await page.waitFor(".profile-actions > li:first-child")
-        # going to "View profile" page
-        await page.click(".profile-actions > li:first-child")
-        await page.waitForSelector(".share-title", options={"timeout": 0})
+        username = sub_title = None
 
-        username = await page.Jeval(".share-title", pageFunction="element => element.textContent")
-        username = username.strip()
+        while not all((username, sub_title)):
+            await page.hover(".menu-right .profile")
 
-        sub_title = await page.Jeval(
-            ".share-sub-title",
-            pageFunction="element => element.textContent",
-        )
+            await page.waitFor(".profile-actions > li:first-child")
+            # going to "View profile" page
+            await page.click(".profile-actions > li:first-child")
+
+            try:
+                await page.waitForSelector(".share-title", options={"timeout": 10_000})
+            except Exception:
+                continue
+
+            username = await page.Jeval(
+                ".share-title",
+                pageFunction="element => element.textContent",
+            )
+            username = username.strip()
+
+            sub_title = await page.Jeval(
+                ".share-sub-title",
+                pageFunction="element => element.textContent",
+            )
 
         logger.info(f"🔑 Logged as @{username} aka {sub_title}")
 

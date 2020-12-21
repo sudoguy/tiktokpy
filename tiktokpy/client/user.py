@@ -178,33 +178,16 @@ class User:
         logger.debug(f"📨 Request {username} feed")
 
         result: List[dict] = []
-        user_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
 
         page.on(
             "response",
             lambda res: asyncio.create_task(catch_response_and_store(res, result)),
         )
 
-        page.on(
-            "response",
-            lambda res: asyncio.create_task(
-                catch_response_info(res, user_info_queue, "/user/detail"),
-            ),
-        )
         _ = await self.client.goto(f"/{username}", page=page, options={"waitUntil": "networkidle0"})
         logger.debug(f"📭 Got {username} feed")
 
         await page.waitForSelector(".video-feed-item", options={"visible": True})
-
-        user_info = await user_info_queue.get()
-        user_video_count = user_info["userInfo"]["stats"]["videoCount"]
-
-        if user_video_count < amount:
-            logger.info(
-                f"⚠️  User {username} has only {user_video_count} videos. "
-                f"Set amount from {amount} to {user_video_count}",
-            )
-            amount = user_video_count
 
         pbar = tqdm(total=amount, desc=f"📈 Getting {username} feed")
         pbar.n = min(len(result), amount)

@@ -23,7 +23,7 @@ async def catch_response_and_store(response, result):
         logger.debug(response.url)
         data = await response.json()
 
-        for item in data["items"]:
+        for item in data["itemList"]:
             result.append(item)
         logger.debug(f"🛒 Collected {len(data['items'])} items. Total: {len(result)}")
 

@@ -719,7 +719,7 @@ websockets = ">=8.1,<9.0"
 
 [[package]]
 name = "pyppeteer-stealth"
-version = "2.6.1"
+version = "2.7.1"
 description = "pyppeteer stealth"
 category = "main"
 optional = false
@@ -978,6 +978,7 @@ click = [
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
+    {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 contextvars = [
     {file = "contextvars-2.4.tar.gz", hash = "sha256:f38c908aaa59c14335eeea12abea5f443646216c4e29380d7bf34d2018e2c39e"},
@@ -1353,7 +1354,7 @@ pyppeteer = [
     {file = "pyppeteer-0.2.5.tar.gz", hash = "sha256:c2974be1afa13b17f7ecd120d265d8b8cd324d536a231c3953ca872b68aba4af"},
 ]
 pyppeteer-stealth = [
-    {file = "pyppeteer_stealth-2.6.1.tar.gz", hash = "sha256:e2e534fcd8e50a6baf6c33d4558abba4f260e1390f409391927afb71f1e82784"},
+    {file = "pyppeteer_stealth-2.7.1.tar.gz", hash = "sha256:aeeb4b6dced568c19e7e0c1b24add806aac0ac45d27b456ec6b231e61599d134"},
 ]
 pytest = [
     {file = "pytest-6.2.1-py3-none-any.whl", hash = "sha256:1969f797a1a0dbd8ccf0fecc80262312729afea9c17f1d70ebf85c5e76c6f7c8"},

@@ -14,13 +14,14 @@ from tiktokpy.models.feed import FeedItem, FeedItems
 from tiktokpy.utils.logger import init_logger, logger
 from tiktokpy.utils.settings import load_or_create_settings
 
+from .version import __version__
+
 
 class TikTokPy:
     def __init__(self, settings_path: Optional[str] = None):
-        from tiktokpy import __version__
-
         init_logger()
         self.started_at = datetime.now()
+        self.client: Client
 
         logger.info("🥳 TikTokPy initialized. Version: {}", __version__)
 
@@ -32,7 +33,7 @@ class TikTokPy:
             logger.info("🛑 Cookies not found, anonymous mode")
 
     async def __aenter__(self):
-        await self._init_bot()
+        await self.init_bot()
 
         return self
 
@@ -94,13 +95,13 @@ class TikTokPy:
 
         return feed.__root__
 
-    async def _init_bot(self):
-        self.client: Client = await Client.create()
+    async def init_bot(self):
+        self.client: Client = await Client.create(headless=True)
 
     @classmethod
     async def create(cls):
         self = TikTokPy()
-        await self._init_bot()
+        await self.init_bot()
 
         return self
 

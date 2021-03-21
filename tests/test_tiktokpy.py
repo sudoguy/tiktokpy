@@ -1,4 +1,4 @@
-from tiktokpy import __version__
+from tiktokpy.bot.version import __version__
 
 
 def test_version():

@@ -5,6 +5,7 @@ os:
 
 stages:
   - lint
+  - test
   - name: deploy
     if: tag IS present
 
@@ -12,6 +13,7 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
   - "nightly"
   - "pypy3"
 
@@ -28,6 +30,9 @@ jobs:
         - pre-commit install-hooks
       script:
         - pre-commit run --all-files
+    - stage: test
+      script:
+        - poetry run pytest
     - stage: deploy
       script:
         - echo Deploying to PyPI...

@@ -18,7 +18,7 @@ repos:
       args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
 
 - repo: https://github.com/asottile/pyupgrade
-  rev: v2.7.4
+  rev: v2.11.0
   hooks:
     - id: pyupgrade
       args: ['--py36-plus']
@@ -35,7 +35,7 @@ repos:
     files: '\.py$'
 
 - repo: https://gitlab.com/pycqa/flake8
-  rev: 3.8.4
+  rev: 3.9.0
   hooks:
     - id: flake8
       additional_dependencies: [

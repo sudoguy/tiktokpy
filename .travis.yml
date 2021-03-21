@@ -32,10 +32,9 @@ jobs:
       script:
         - pre-commit run --all-files
     - stage: crontest
-      install:
+      script:
         - pip install poetry
         - poetry install
-      script:
         - poetry run pytest
     - stage: deploy
       script:

@@ -5,7 +5,8 @@ os:
 
 stages:
   - lint
-  - test
+  - name: crontest
+    if: type = cron
   - name: deploy
     if: tag IS present
 
@@ -18,7 +19,7 @@ python:
   - "pypy3"
 
 install:
-  - pip install --upgrade pip
+  - pip install --upgrade pip poetry
 
 script: skip
 
@@ -30,7 +31,9 @@ jobs:
         - pre-commit install-hooks
       script:
         - pre-commit run --all-files
-    - stage: test
+    - stage: crontest
+      install:
+        - poetry install
       script:
         - poetry run pytest
     - stage: deploy

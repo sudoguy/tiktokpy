@@ -33,6 +33,7 @@ jobs:
         - pre-commit run --all-files
     - stage: crontest
       install:
+        - pip install poetry
         - poetry install
       script:
         - poetry run pytest

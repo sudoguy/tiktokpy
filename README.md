@@ -6,7 +6,7 @@ TikTokPy
 
 <p align="center">
 <a href="https://travis-ci.com/sudoguy/tiktokpy">
-    <img src="https://travis-ci.org/sudoguy/tiktokpy.svg?branch=master" alt="Build Status">
+    <img src="https://travis-ci.com/sudoguy/tiktokpy.svg?branch=master" alt="Build Status">
 </a>
 <a href="https://pypi.org/project/tiktokpy/">
     <img src="https://badge.fury.io/py/tiktokpy.svg" alt="Package version">

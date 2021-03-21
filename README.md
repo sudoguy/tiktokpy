@@ -5,7 +5,7 @@ TikTokPy
  <em>Tooling that <b>automates</b> your social media interactions to “farm” Likes and Followers on TikTok</em></p>
 
 <p align="center">
-<a href="https://travis-ci.org/sudoguy/tiktokpy">
+<a href="https://travis-ci.com/sudoguy/tiktokpy">
     <img src="https://travis-ci.org/sudoguy/tiktokpy.svg?branch=master" alt="Build Status">
 </a>
 <a href="https://pypi.org/project/tiktokpy/">

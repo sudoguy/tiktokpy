@@ -32,10 +32,10 @@ jobs:
       script:
         - pre-commit run --all-files
     - stage: crontest
+      services: docker
       script:
-        - pip install poetry
-        - poetry install
-        - poetry run pytest
+        - docker build -f Dockerfile.test --build-arg ENV=test -t tiktokpy-test .
+        - docker run -t tiktokpy-test
     - stage: deploy
       script:
         - echo Deploying to PyPI...
@@ -51,7 +51,7 @@ deploy:
   script: poetry publish
   skip_cleanup: true
   on:
-    all_branches: true  # Travis recognizes tag names as "branches"
+    all_branches: true # Travis recognizes tag names as "branches"
     condition: $TRAVIS_BUILD_STAGE_NAME = deploy
     repo: sudoguy/tiktokpy
     tags: true

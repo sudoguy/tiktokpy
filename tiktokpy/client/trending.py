@@ -1,6 +1,7 @@
 import asyncio
 from typing import List
 
+import pyppeteer
 from tqdm import tqdm
 
 from tiktokpy.client import Client
@@ -38,12 +39,18 @@ class Trending:
         while len(result) < amount:
 
             logger.debug("🖱 Trying to scroll to last video item")
-            await page.evaluate(
-                """
-                document.querySelector('.video-feed-container > .lazyload-wrapper:last-child')
+
+            last_child_selector = 'div[class*="-ItemContainer"]:last-child'
+            scroll_command = """
+                document.querySelector('{selector}')
                     .scrollIntoView();
-            """,
-            )
+                """
+            try:
+                await page.evaluate(scroll_command.format(selector=last_child_selector))
+            except pyppeteer.errors.ElementHandleError:
+                last_child_selector = ".video-feed-container > .lazyload-wrapper:last-child"
+                await page.evaluate(scroll_command.format(selector=last_child_selector))
+
             await page.waitFor(1_000)
 
             elements = await page.JJ(".video-feed-item")

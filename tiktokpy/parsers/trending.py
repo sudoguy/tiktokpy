@@ -14,16 +14,14 @@ class FeedItemsParser:
             # Example: 5.1M
             # Remove "M" from value and cast to float
             new_value = float(action_value[:-1])
-            new_value = int(new_value * 1_000_000)
+            return int(new_value * 1_000_000)
         elif "K" in action_value:
             # Example: 5.1K
             # Remove "K" from value and cast to float
             new_value = float(action_value[:-1])
-            new_value = int(new_value * 1_000)
+            return int(new_value * 1_000)
         else:
-            new_value = int(action_value)
-
-        return new_value
+            return int(action_value)
 
     def loads(self) -> List[Dict[str, Any]]:
         result = []
@@ -78,9 +76,7 @@ class FeedItemsParser:
         }
 
     def title(self) -> str:
-        title = self.selector.css(".item-meta-title > strong::text").get("")
-
-        return title
+        return self.selector.css(".item-meta-title > strong::text").get("")
 
     def music_info(self) -> Dict[str, str]:
         title = self.selector.css(".music-title-content::text").get("")

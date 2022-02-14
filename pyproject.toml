@@ -37,7 +37,7 @@ tqdm = "^4.48.0"
 pyppeteer-stealth = "^2.6.0"
 parsel = { version ="^1.6.0", optional = true }
 dynaconf = "^3.0.0"
-humanize = "^3.2.0"
+humanize = ">=3.2,<5.0"
 typer = "^0.3.1"
 
 [tool.poetry.extras]

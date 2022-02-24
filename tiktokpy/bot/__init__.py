@@ -1,3 +1,5 @@
+import asyncio
+import logging
 import typing
 from datetime import datetime
 from types import TracebackType
@@ -6,6 +8,7 @@ from typing import List, Optional
 import humanize
 from dynaconf import settings
 
+from tiktokpy.bot.decorators import login_required
 from tiktokpy.client import Client
 from tiktokpy.client.login import Login
 from tiktokpy.client.trending import Trending
@@ -19,9 +22,10 @@ from .version import __version__
 
 class TikTokPy:
     def __init__(self, settings_path: Optional[str] = None):
-        init_logger()
+        init_logger(logging.INFO)
         self.started_at = datetime.now()
         self.client: Client
+        self.is_logged_in = False
 
         logger.info("🥳 TikTokPy initialized. Version: {}", __version__)
 
@@ -29,8 +33,11 @@ class TikTokPy:
 
         if settings.get("COOKIES") and settings.get("USERNAME"):
             logger.info(f"✅ Used cookies of @{settings.USERNAME}")
+            self.is_logged_in = True
         else:
             logger.info("🛑 Cookies not found, anonymous mode")
+
+        self.headless: bool = settings.get("HEADLESS", True)
 
     async def __aenter__(self):
         await self.init_bot()
@@ -45,9 +52,17 @@ class TikTokPy:
     ) -> None:
         logger.debug("🤔Trying to close browser..")
 
-        await self.client.browser.close()
+        if exc_type and exc_value:
+            logger.debug(f"🐛 Found exception. Type: {exc_type}")
 
-        logger.debug("✋ Browser successfully closed")
+        try:
+            await asyncio.wait_for(self.client.browser.close(), timeout=10.0)
+            await asyncio.wait_for(self.client.playwright.stop(), timeout=5.0)
+        except asyncio.TimeoutError:
+            logger.debug("🐛 Timeout reached while closing browser")
+        else:
+            logger.debug("✋ Browser successfully closed")
+
         logger.info(
             "✋ TikTokPy finished working. Session lasted: {}",
             humanize.naturaldelta(datetime.now() - self.started_at),
@@ -55,6 +70,11 @@ class TikTokPy:
 
     async def trending(self, amount: int = 50, lang: str = "en") -> List[FeedItem]:
         logger.info("📈 Getting trending items")
+
+        if amount <= 0:
+            logger.warning("⚠️ Wrong amount! Return nothing")
+            return []
+
         items = await Trending(client=self.client).feed(amount=amount, lang=lang)
 
         logger.info(f"📹 Found {len(items)} videos")
@@ -62,22 +82,26 @@ class TikTokPy:
 
         return _trending.__root__
 
+    @login_required()
     async def follow(self, username: str):
         username = f"@{username.lstrip('@')}"
         await User(client=self.client).follow(username=username)
 
+    @login_required()
     async def like(self, feed_item: FeedItem):
         await User(client=self.client).like(
             username=feed_item.author.username,
             video_id=feed_item.id,
         )
 
+    @login_required()
     async def unlike(self, feed_item: FeedItem):
         await User(client=self.client).unlike(
             username=feed_item.author.username,
             video_id=feed_item.id,
         )
 
+    @login_required()
     async def unfollow(self, username: str):
         username = f"@{username.lstrip('@')}"
         await User(client=self.client).unfollow(username=username)
@@ -96,7 +120,7 @@ class TikTokPy:
         return feed.__root__
 
     async def init_bot(self):
-        self.client: Client = await Client.create(headless=True)
+        self.client: Client = await Client.create(headless=self.headless)
 
     @classmethod
     async def create(cls):

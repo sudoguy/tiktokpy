@@ -1,12 +1,15 @@
 import asyncio
+import random
 from typing import List
 
-import pyppeteer
 from tqdm import tqdm
 
 from tiktokpy.client import Client
 from tiktokpy.utils.client import catch_response_and_store
 from tiktokpy.utils.logger import logger
+
+FEED_LIST_ITEM = 'div[data-e2e="recommend-list-item-container"]'
+FEED_LIST_ITEM_LAST_CHILD = f"{FEED_LIST_ITEM}:last-child"
 
 
 class Trending:
@@ -28,7 +31,7 @@ class Trending:
             "/foryou",
             query_params={"lang": lang},
             page=page,
-            options={"waitUntil": "networkidle0"},
+            wait_until="networkidle",
         )
         logger.debug('📭 Got response from "Trending" page')
 
@@ -36,39 +39,38 @@ class Trending:
         pbar.n = min(len(result), amount)
         pbar.refresh()
 
-        while len(result) < amount:
+        try:
+            while len(result) < amount:
+                if len(result) != 0:
+                    timeout = random.randint(5, 10)
+                    await page.wait_for_timeout(timeout * 1000)
 
-            logger.debug("🖱 Trying to scroll to last video item")
+                logger.debug("🖱 Trying to scroll to last video item")
 
-            last_child_selector = 'div[class*="-ItemContainer"]:last-child'
-            scroll_command = """
-                document.querySelector('{selector}')
-                    .scrollIntoView();
-                """
-            try:
-                await page.evaluate(scroll_command.format(selector=last_child_selector))
-            except pyppeteer.errors.ElementHandleError:
-                last_child_selector = ".video-feed-container > .lazyload-wrapper:last-child"
-                await page.evaluate(scroll_command.format(selector=last_child_selector))
+                await page.wait_for_selector(FEED_LIST_ITEM_LAST_CHILD)
 
-            await page.waitFor(1_000)
+                scroll_command = "document.querySelector('{selector}').scrollIntoView();"
+                await page.evaluate(scroll_command.format(selector=FEED_LIST_ITEM_LAST_CHILD))
+                await page.wait_for_timeout(1_000)
 
-            elements = await page.JJ(".video-feed-item")
-            logger.debug(f"🔎 Found {len(elements)} items for clear")
+                elements = await page.query_selector_all(FEED_LIST_ITEM)
+                logger.debug(f"🔎 Found {len(elements)} items on page")
+                await self.client.screenshot("trending.png", page)
 
-            pbar.n = min(len(result), amount)
-            pbar.refresh()
+                pbar.n = min(len(result), amount)
+                pbar.refresh()
+        except Exception:
+            logger.exception("Something went wrong. Interrupt work")
 
-            if len(elements) < 500:
-                logger.debug("🔻 Too less for clearing page")
-                continue
+            # if len(elements) < 500:
+            #     logger.debug("🔻 Too less for clearing page")
+            #     continue
 
-            await page.JJeval(
-                ".video-feed-container > .lazyload-wrapper:not(:last-child)",
-                pageFunction="(elements) => elements.forEach(el => el.remove())",
-            )
-            logger.debug(f"🎉 Cleaned {len(elements) - 1} items from page")
-            await page.waitFor(30_000)
+            # await page.eval_on_selector_all(
+            #     f"{FEED_LIST_ITEM_CONTAINER}:not(:last-child)",
+            #     expression="(elements) => elements.forEach(el => el.remove())",
+            # )
+            # logger.debug(f"🎉 Cleaned {len(elements) - 1} items from page")
 
         await page.close()
         pbar.close()

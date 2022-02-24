@@ -1,24 +1,26 @@
 from typing import List
 
+from playwright.async_api import Response, Route
+
 from tiktokpy.utils.logger import logger
 
 
-async def block_resources_and_sentry(request, types: List[str]):
+async def block_resources_and_sentry(route: Route, types: List[str]):
     is_blocked = False
 
-    if request.resourceType in types:
+    if route.request.resource_type in types:
         is_blocked = True
 
-    if "/sentry/" in request.url:
+    if "/sentry/" in route.request.url:
         is_blocked = True
 
     if is_blocked:
-        await request.abort()
+        await route.abort()
     else:
-        await request.continue_()
+        await route.continue_()
 
 
-async def catch_response_and_store(response, result):
+async def catch_response_and_store(response: Response, result):
     if "/item_list" in response.url:
         logger.debug(response.url)
         data = await response.json()

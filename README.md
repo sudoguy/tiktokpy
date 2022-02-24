@@ -64,3 +64,9 @@ Install with pip:
 ```shell
 pip install tiktokpy
 ```
+
+Install browser by playwright
+
+```shell
+playwright install chromium
+```

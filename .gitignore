@@ -132,3 +132,6 @@ dmypy.json
 screenshots
 settings.toml
 demo.py
+
+# vscode
+.vscode/

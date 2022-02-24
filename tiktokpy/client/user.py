@@ -1,12 +1,20 @@
 import asyncio
 from typing import List
 
-from pyppeteer.page import Page
+from playwright.async_api import Page
 from tqdm import tqdm
 
 from tiktokpy.client import Client
 from tiktokpy.utils.client import catch_response_and_store, catch_response_info
 from tiktokpy.utils.logger import logger
+
+FEED_LIST_ITEM = 'div[data-e2e="recommend-list-item-container"]'
+USER_FEED_LIST = 'div[data-e2e="user-post-item-list"]'
+USER_FEED_ITEM = 'div[data-e2e="user-post-item-list"] > div'
+USER_FEED_LAST_ITEM = 'div[data-e2e="user-post-item-list"] > div:last-child'
+FOLLOW_BUTTON = 'button[data-e2e="follow-button"]'
+UNFOLLOW_BUTTON = 'div[class*="DivFollowIcon"]'
+ERROR_TITLE = "main div[class*=ErrorContainer] p"
 
 
 class User:
@@ -31,14 +39,16 @@ class User:
         await self.client.goto(
             f"/@{username}/video/{video_id}",
             page=page,
-            options={"waitUntil": "networkidle0"},
+            wait_until="networkidle",
         )
 
-        like_selector = ".lazyload-wrapper:first-child .item-action-bar.vertical > .bar-item-wrapper:first-child"  # noqa: E501
-        is_liked = await page.J(f'{like_selector} svg[fill="none"]')
+        like_selector = f'{FEED_LIST_ITEM}:first-child span[data-e2e="like-icon"]'
+        is_liked = await page.query_selector(f"{like_selector} > div > svg")
 
         if is_liked:
             logger.info(f"😏 @{username}'s video {video_id} already liked")
+            await page.close()
+
             return
 
         await page.click(like_selector)
@@ -70,21 +80,23 @@ class User:
         await self.client.goto(
             f"/@{username}/video/{video_id}",
             page=page,
-            options={"waitUntil": "networkidle0"},
+            wait_until="networkidle",
         )
 
-        like_selector = ".lazyload-wrapper:first-child .item-action-bar.vertical > .bar-item-wrapper:first-child"  # noqa: E501
-        is_unliked = await page.J(f'{like_selector} svg[fill="currentColor"]')
+        like_selector = f'{FEED_LIST_ITEM}:first-child span[data-e2e="like-icon"]'
+        is_unliked = not await page.query_selector(f"{like_selector} > div > svg")
 
         if is_unliked:
             logger.info(f"😏 @{username}'s video {video_id} already unliked")
+            await page.close()
+
             return
 
         await page.click(like_selector)
 
-        like_info = await like_info_queue.get()
+        unlike_info = await like_info_queue.get()
 
-        if like_info["status_code"] == 0:
+        if unlike_info["status_code"] == 0:
             logger.info(f"👎 @{username}'s video {video_id} unliked")
         else:
             logger.warning(f"⚠️  @{username}'s video {video_id} probably not unliked")
@@ -109,19 +121,21 @@ class User:
         await self.client.goto(
             f"/@{username.lstrip('@')}",
             page=page,
-            options={"waitUntil": "networkidle0"},
+            wait_until="networkidle",
         )
 
-        follow_title: str = await page.Jeval(
-            ".follow-button",
-            pageFunction="element => element.textContent",
+        follow_title: str = await page.eval_on_selector(
+            FOLLOW_BUTTON,
+            expression="element => element.textContent",
         )
 
         if follow_title.lower() != "follow":
             logger.info(f"😏 {username} already followed")
+            await page.close()
+
             return
 
-        await page.click(".follow-button")
+        await page.click(FOLLOW_BUTTON)
 
         follow_info = await follow_info_queue.get()
 
@@ -150,19 +164,19 @@ class User:
         await self.client.goto(
             f"/@{username.lstrip('@')}",
             page=page,
-            options={"waitUntil": "networkidle0"},
+            wait_until="networkidle",
         )
 
-        follow_title: str = await page.Jeval(
-            ".follow-button",
-            pageFunction="element => element.textContent",
+        follow_title: str = await page.eval_on_selector(
+            FOLLOW_BUTTON,
+            expression="element => element.textContent",
         )
 
         if follow_title.lower() != "following":
             logger.info(f"😏 {username} already unfollowed")
             return
 
-        await page.click(".follow-button")
+        await page.click(UNFOLLOW_BUTTON)
 
         unfollow_info = await unfollow_info_queue.get()
 
@@ -173,7 +187,7 @@ class User:
 
         await page.close()
 
-    async def feed(self, username: str, amount: int):
+    async def feed(self, username: str, amount: int) -> List[dict]:
         page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
         logger.debug(f"📨 Request {username} feed")
 
@@ -184,10 +198,17 @@ class User:
             lambda res: asyncio.create_task(catch_response_and_store(res, result)),
         )
 
-        _ = await self.client.goto(f"/{username}", page=page, options={"waitUntil": "networkidle0"})
+        _ = await self.client.goto(f"/{username}", page=page, wait_until="networkidle")
         logger.debug(f"📭 Got {username} feed")
 
-        await page.waitForSelector(".video-feed-item", options={"visible": True})
+        error = await page.query_selector(ERROR_TITLE)
+
+        if error:
+            logger.info(f'😭 Error message on page: "{await error.text_content()}"')
+
+            return []
+
+        await page.wait_for_selector(USER_FEED_LIST, state="visible")
 
         pbar = tqdm(total=amount, desc=f"📈 Getting {username} feed")
         pbar.n = min(len(result), amount)
@@ -199,15 +220,15 @@ class User:
         while len(result) < amount:
             logger.debug("🖱 Trying to scroll to last video item")
             await page.evaluate(
-                """
-                document.querySelector('.video-feed-item:last-child')
+                f"""
+                document.querySelector('{USER_FEED_LAST_ITEM}')
                     .scrollIntoView();
             """,
             )
-            await page.waitFor(1_000)
+            await page.wait_for_timeout(1_000)
 
-            elements = await page.JJ(".video-feed-item")
-            logger.debug(f"🔎 Found {len(elements)} items for clear")
+            elements = await page.query_selector_all(USER_FEED_ITEM)
+            logger.debug(f"🔎 Found {len(elements)} items")
 
             pbar.n = min(len(result), amount)
             pbar.refresh()
@@ -232,12 +253,12 @@ class User:
                 logger.debug("🔻 Too less for clearing page")
                 continue
 
-            await page.JJeval(
-                ".video-feed-item:not(:last-child)",
-                pageFunction="(elements) => elements.forEach(el => el.remove())",
+            await page.eval_on_selector_all(
+                f"{USER_FEED_LIST}:not(:last-child)",
+                expression="(elements) => elements.forEach(el => el.remove())",
             )
             logger.debug(f"🎉 Cleaned {len(elements) - 1} items from page")
-            await page.waitFor(30_000)
+            await page.wait_for_timeout(30_000)
 
         await page.close()
         pbar.close()

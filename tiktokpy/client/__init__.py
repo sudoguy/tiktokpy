@@ -5,30 +5,25 @@ from typing import List, Optional
 from urllib.parse import urlencode, urljoin
 
 from dynaconf import settings
-from pyppeteer import launch
-from pyppeteer.browser import Browser
-from pyppeteer.page import Page, Response
-from pyppeteer_stealth import (
-    iframe_content_window,
-    media_codecs,
-    navigator_permissions,
-    navigator_plugins,
-    navigator_webdriver,
-    webgl_vendor,
-    window_outerdimensions,
-)
+from playwright.async_api import Browser, Page, Playwright, PlaywrightContextManager, Response
+from playwright_stealth import StealthConfig, stealth_async
 
 from tiktokpy.utils.client import block_resources_and_sentry
 from tiktokpy.utils.logger import logger
 
 
 class Client:
+    """Browser client"""
+
     def __init__(self):
         self.base_url = settings.BASE_URL
+        self.playwright: Playwright
 
         self.cookies = json.loads(settings.get("COOKIES", "[]"))
 
     async def init_browser(self, headless: bool):
+        self.playwright = await PlaywrightContextManager().start()
+
         params = {
             "headless": headless,
             "args": [
@@ -36,35 +31,47 @@ class Client:
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage",
                 "--disable-web-security",
+                "--disable-notifications",
             ],
         }
 
-        self.browser: Browser = await launch(**params)
+        self.browser: Browser = await self.playwright.chromium.launch(**params)
+        self.context = await self.browser.new_context()
+        await self.context.add_cookies(self.cookies)
         logger.debug(f"🎉 Browser launched. Options: {params}")
 
-    async def stealth(self, page: Page):
-        await iframe_content_window(page)
-        await media_codecs(page)
-        await navigator_permissions(page)
-        await navigator_plugins(page)
-        await navigator_webdriver(page)
-        await webgl_vendor(page)
-        await window_outerdimensions(page)
-
     async def new_page(self, blocked_resources: Optional[List[str]] = None) -> Page:
-        page: Page = await self.browser.newPage()
+        page: Page = await self.context.new_page()
 
         # set stealth mode for tiktok
-        await self.stealth(page)
-
-        await page.setCookie(*self.cookies)
+        await stealth_async(
+            page,
+            StealthConfig(
+                webdriver=True,
+                webgl_vendor=True,
+                chrome_app=False,
+                chrome_csi=False,
+                chrome_load_times=False,
+                chrome_runtime=False,
+                iframe_content_window=True,
+                media_codecs=True,
+                navigator_hardware_concurrency=4,
+                navigator_languages=False,
+                navigator_permissions=True,
+                navigator_platform=False,
+                navigator_plugins=True,
+                navigator_user_agent=False,
+                navigator_vendor=False,
+                outerdimensions=True,
+                hairline=False,
+            ),
+        )
 
         if blocked_resources is not None:
-            await page.setRequestInterception(True)
-            page.on(
-                "request",
-                lambda req: asyncio.create_task(
-                    block_resources_and_sentry(req, blocked_resources),
+            await page.route(
+                "**/*",
+                lambda route: asyncio.create_task(
+                    block_resources_and_sentry(route, blocked_resources),
                 ),
             )
 
@@ -89,7 +96,7 @@ class Client:
     async def screenshot(self, path: str, page: Page):
         Path(path).parent.mkdir(parents=True, exist_ok=True)
 
-        await page.screenshot({"path": path})
+        await page.screenshot(path=path)
 
     @classmethod
     async def create(cls, headless: bool = True):

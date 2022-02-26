@@ -14,7 +14,10 @@ def login_required(empty_result: Any = None):
             self_ = args[0]
 
             if not getattr(self_, "is_logged_in", False):
-                logger.error(f'😡 You cannot use function "{func.__name__}" without login!')
+                logger.error(
+                    f'😡 You cannot use function "{func.__name__}" without login! '
+                    'Run "tiktokpy login" first and do login',
+                )
                 return empty()
 
             return func(*args, **kwargs)

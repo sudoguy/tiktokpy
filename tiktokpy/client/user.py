@@ -1,20 +1,23 @@
 import asyncio
-from typing import List
+from typing import Callable, List
 
-from playwright.async_api import Page
+from playwright.async_api import Page, TimeoutError
 from tqdm import tqdm
 
 from tiktokpy.client import Client
+from tiktokpy.utils import unique_dicts_by_key
 from tiktokpy.utils.client import catch_response_and_store, catch_response_info
 from tiktokpy.utils.logger import logger
 
 FEED_LIST_ITEM = 'div[data-e2e="recommend-list-item-container"]'
 USER_FEED_LIST = 'div[data-e2e="user-post-item-list"]'
-USER_FEED_ITEM = 'div[data-e2e="user-post-item-list"] > div'
-USER_FEED_LAST_ITEM = 'div[data-e2e="user-post-item-list"] > div:last-child'
+USER_FEED_ITEM = f"{USER_FEED_LIST} > div"
+USER_FEED_LAST_ITEM = f"{USER_FEED_ITEM}:last-child"
 FOLLOW_BUTTON = 'button[data-e2e="follow-button"]'
 UNFOLLOW_BUTTON = 'div[class*="DivFollowIcon"]'
+MAIN_WRAPPER = "div[class*=DivThreeColumnContainer],main[class*=MainDetailWrapper]"
 ERROR_TITLE = "main div[class*=ErrorContainer] p"
+SEARCH_USERNAME = 'a[href="/{}"]'
 
 
 class User:
@@ -191,6 +194,19 @@ class User:
         page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
         logger.debug(f"📨 Request {username} feed")
 
+        _ = await self.client.goto(
+            f"/search/user?q={username.lstrip('@')}",
+            page=page,
+            wait_until="networkidle",
+        )
+        username_selector = SEARCH_USERNAME.format(username)
+
+        is_found_user = await page.query_selector(username_selector)
+
+        if not is_found_user:
+            logger.error(f'❗️ User "{username}" not found')
+            return []
+
         result: List[dict] = []
 
         page.on(
@@ -198,7 +214,14 @@ class User:
             lambda res: asyncio.create_task(catch_response_and_store(res, result)),
         )
 
-        _ = await self.client.goto(f"/{username}", page=page, wait_until="networkidle")
+        try:
+            await page.click(username_selector)
+            await page.wait_for_selector(MAIN_WRAPPER)
+            await page.wait_for_load_state(state="networkidle")
+        except TimeoutError:
+            logger.error(f'❗️ Unexpected error. Timeout on searching user "{username}"...')
+            return []
+
         logger.debug(f"📭 Got {username} feed")
 
         error = await page.query_selector(ERROR_TITLE)
@@ -210,14 +233,37 @@ class User:
 
         await page.wait_for_selector(USER_FEED_LIST, state="visible")
 
+        await self._paginate_feed_list(
+            page=page,
+            username=username,
+            result=result,
+            amount=amount,
+        )
+
+        await page.close()
+        return unique_dicts_by_key(result, "id")[:amount]
+
+    async def _paginate_feed_list(
+        self,
+        page: Page,
+        username: str,
+        result: List[dict],
+        amount: int,
+    ):
+        result_unique_amount: Callable = lambda: len(unique_dicts_by_key(result, "id"))
+
         pbar = tqdm(total=amount, desc=f"📈 Getting {username} feed")
-        pbar.n = min(len(result), amount)
+        pbar.n = min(result_unique_amount(), amount)
         pbar.refresh()
 
         attempts = 0
-        last_result = len(result)
+        max_attempts = 3
+        last_result = result_unique_amount()
 
-        while len(result) < amount:
+        is_attempts_limit_reached = attempts >= max_attempts
+        is_items_enough = result_unique_amount() < amount
+
+        while is_attempts_limit_reached or is_items_enough:
             logger.debug("🖱 Trying to scroll to last video item")
             await page.evaluate(
                 f"""
@@ -228,38 +274,27 @@ class User:
             await page.wait_for_timeout(1_000)
 
             elements = await page.query_selector_all(USER_FEED_ITEM)
-            logger.debug(f"🔎 Found {len(elements)} items")
+            logger.debug(f"🔎 Found {len(elements)} items on page by selector {USER_FEED_ITEM}")
 
-            pbar.n = min(len(result), amount)
+            pbar.n = min(result_unique_amount(), amount)
             pbar.refresh()
 
-            if last_result == len(result):
+            if last_result == result_unique_amount():
                 attempts += 1
             else:
                 attempts = 0
 
-            if attempts > 10:
+            if attempts > max_attempts:
                 pbar.clear()
-                pbar.total = len(result)
+                pbar.total = result_unique_amount()
                 logger.info(
-                    f"⚠️  After 10 attempts found {len(result)} videos. "
+                    f"⚠️  After {max_attempts} attempts found {result_unique_amount()} videos. "
                     f"Probably some videos are private",
                 )
                 break
 
-            last_result = len(result)
+            last_result = result_unique_amount()
 
-            if len(elements) < 500:
-                logger.debug("🔻 Too less for clearing page")
-                continue
+            await page.wait_for_timeout(5_000)
 
-            await page.eval_on_selector_all(
-                f"{USER_FEED_LIST}:not(:last-child)",
-                expression="(elements) => elements.forEach(el => el.remove())",
-            )
-            logger.debug(f"🎉 Cleaned {len(elements) - 1} items from page")
-            await page.wait_for_timeout(30_000)
-
-        await page.close()
         pbar.close()
-        return result[:amount]

@@ -71,7 +71,7 @@ Install browser by playwright
 playwright install chromium
 ```
 
-If you have little to no knowledge in programming: Read this Guide ["How to use TiktokPy Pyhton Bot"] for beginners(https://my-tailwind-nextjs-starter-blog.vercel.app/blog/how-to-use-tiktokpy-for-beginner-programmers-indepth-guide)
+If you have little to no knowledge in programming: Read this Guide ["How to use TiktokPy Pyhton Bot"](https://my-tailwind-nextjs-starter-blog.vercel.app/blog/how-to-use-tiktokpy-for-beginner-programmers-indepth-guide) for beginners
 
 ## Run
 

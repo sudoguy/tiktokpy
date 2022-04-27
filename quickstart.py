@@ -1,26 +1,5 @@
-<h1 align="center" style="font-size: 3rem;">
-TikTokPy
-</h1>
-<p align="center">
- <em>Tooling that <b>automates</b> your social media interactions to “farm” Likes and Followers on TikTok</em></p>
-
-<p align="center">
-<a href="https://travis-ci.com/sudoguy/tiktokpy">
-    <img src="https://travis-ci.com/sudoguy/tiktokpy.svg?branch=master" alt="Build Status">
-</a>
-<a href="https://pypi.org/project/tiktokpy/">
-    <img src="https://badge.fury.io/py/tiktokpy.svg" alt="Package version">
-</a>
-</p>
-
----
-
-## Quickstart.py
-
-```python
 import asyncio
 from tiktokpy import TikTokPy
-
 
 async def main():
     async with TikTokPy() as bot:
@@ -53,28 +32,4 @@ async def main():
 
         # and many other things 😉
 
-
 asyncio.run(main())
-```
-
-## Installation
-
-Install with pip:
-
-```shell
-pip install tiktokpy
-```
-
-Install browser by playwright
-
-```shell
-playwright install chromium
-```
-
-If you have little to no knowledge in programming: Read this Guide ["How to use TiktokPy Python Bot"](https://my-tailwind-nextjs-starter-blog.vercel.app/blog/how-to-use-tiktokpy-for-beginner-programmers-indepth-guide) for beginners
-
-## Run
-
-```shell
-python quickstart.py
-```

@@ -42,7 +42,7 @@ class Login:
         cookies = await client.context.cookies()
 
         loaders.write(
-            f"{settings.HOME_DIR}/settings_test.toml",
+            f"{settings.HOME_DIR}/settings.toml",
             {**BASE_SETTINGS, **{"COOKIES": json.dumps(cookies), "USERNAME": username}},
             env="default",
         )

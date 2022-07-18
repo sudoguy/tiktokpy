@@ -68,7 +68,7 @@ class TikTokPy:
             humanize.naturaldelta(datetime.now() - self.started_at),
         )
 
-    async def trending(self, amount: int = 50, lang: str = "en") -> List[FeedItem]:
+    async def trending(self, amount: int = 50, lang: str = settings.get("LANG")) -> List[FeedItem]:
         logger.info("📈 Getting trending items")
 
         if amount <= 0:

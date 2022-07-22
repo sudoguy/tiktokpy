@@ -45,7 +45,7 @@ class User:
             wait_until="networkidle",
         )
 
-        like_selector = f'{FEED_LIST_ITEM}:first-child span[data-e2e="like-icon"]'
+        like_selector = f'span[data-e2e="like-icon"]'
         is_liked = await page.query_selector(f"{like_selector} > div > svg")
 
         if is_liked:

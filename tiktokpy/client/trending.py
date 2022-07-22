@@ -3,6 +3,7 @@ import random
 from typing import List
 
 from tqdm import tqdm
+from dynaconf import settings
 
 from tiktokpy.client import Client
 from tiktokpy.utils.client import catch_response_and_store
@@ -16,7 +17,7 @@ class Trending:
     def __init__(self, client: Client):
         self.client = client
 
-    async def feed(self, amount: int, lang: str = "en"):
+    async def feed(self, amount: int, lang: str = settings.get("LANG")):
         page = await self.client.new_page(blocked_resources=["media", "image", "font"])
 
         logger.debug('📨 Request "Trending" page')
@@ -35,7 +36,7 @@ class Trending:
         )
         logger.debug('📭 Got response from "Trending" page')
 
-        pbar = tqdm(total=amount, desc=f"📈 Getting trending {lang.upper()}")
+        pbar = tqdm(total=amount, desc=f"📈 Getting trending {lang}")
         pbar.n = min(len(result), amount)
         pbar.refresh()
 

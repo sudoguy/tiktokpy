@@ -75,6 +75,13 @@ If you have little to no knowledge in programming: Read this Guide ["How to use 
 
 ## Run
 
+To create your cookies and settings.toml file simply run
+
+```shell
+python quicklogin.py
+```
+and then after you login run
+
 ```shell
 python quickstart.py
 ```

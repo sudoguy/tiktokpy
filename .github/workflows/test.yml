@@ -15,5 +15,5 @@ jobs:
           ref: ${{ github.ref }}
           check-name: 'pre-commit.ci'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
+          wait-interval: 100
       - run: echo "🎉"

@@ -1,0 +1,19 @@
+name: test
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  publish:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for tests to succeed
+        uses: lewagon/wait-on-check-action@v1.2.0
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'pre-commit.ci'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+      - run: echo "🎉"

@@ -38,6 +38,7 @@ class TikTokPy:
             logger.info("🛑 Cookies not found, anonymous mode")
 
         self.headless: bool = settings.get("HEADLESS", True)
+        self.lang: str = settings.get("LANG", "en")
 
     async def __aenter__(self):
         await self.init_bot()
@@ -68,14 +69,14 @@ class TikTokPy:
             humanize.naturaldelta(datetime.now() - self.started_at),
         )
 
-    async def trending(self, amount: int = 50, lang: str = settings.get("LANG")) -> List[FeedItem]:
+    async def trending(self, amount: int = 50) -> List[FeedItem]:
         logger.info("📈 Getting trending items")
 
         if amount <= 0:
             logger.warning("⚠️ Wrong amount! Return nothing")
             return []
 
-        items = await Trending(client=self.client).feed(amount=amount, lang=lang)
+        items = await Trending(client=self.client).feed(amount=amount)
 
         logger.info(f"📹 Found {len(items)} videos")
         _trending = FeedItems(__root__=items)

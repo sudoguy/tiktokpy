@@ -46,24 +46,24 @@ html = ["parsel"]
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.0"
 black = "^22.1.0"
-pytest-cov = "^3.0.0"
+pytest-cov = "^4.0.0"
 pytest-mock = "^3.2.0"
 pre-commit = "^2.6.0"
-flake8 = "^4.0.1"
+flake8 = "^5.0.0"
 flake8-blind-except = "^0.2.1"
 flake8-commas = "^2.0.0"
 flake8-comprehensions = "^3.2.0"
-flake8-deprecated = "^1.3"
+flake8-deprecated = "^2.0.1"
 flake8-mutable = "^1.2.0"
 flake8-tidy-imports = "^4.0.0"
-flake8-print = "^4.0.0"
+flake8-print = "^5.0.0"
 isort = "^5.1.4"
 mypy = "*"
 bump2version = "^1.0.0"
-pytest-asyncio = "^0.18.2"
-flake8-broken-line = "^0.4.0"
+pytest-asyncio = "^0.20.2"
+flake8-broken-line = "^0.6.0"
 flake8-bugbear = "^22.7.1"
-flake8-logging-format = "^0.6.0"
+flake8-logging-format = "^0.9.0"
 flake8-pytest-style = "^1.4.0"
 pylint = "^2.7.2"
 
@@ -88,3 +88,33 @@ exclude = '''
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+
+[tool.ruff]
+exclude = [
+    '.git',
+    '__pycache__',
+    '.venv',
+    '.eggs',
+    '*.egg',
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "C901",  # too complex
+]
+line-length = 100
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    # "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+]
+
+[tool.ruff.mccabe]
+max-complexity = 6

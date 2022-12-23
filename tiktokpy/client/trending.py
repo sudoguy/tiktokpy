@@ -1,9 +1,9 @@
 import asyncio
 import random
-from typing import List
+from typing import List, Optional
 
-from tqdm import tqdm
 from dynaconf import settings
+from tqdm import tqdm
 
 from tiktokpy.client import Client
 from tiktokpy.utils.client import catch_response_and_store
@@ -14,10 +14,11 @@ FEED_LIST_ITEM_LAST_CHILD = f"{FEED_LIST_ITEM}:last-child"
 
 
 class Trending:
-    def __init__(self, client: Client):
+    def __init__(self, client: Client, lang: Optional[str] = None):
         self.client = client
+        self.lang = lang or settings.get("LANG")
 
-    async def feed(self, amount: int, lang: str = settings.get("LANG")):
+    async def feed(self, amount: int):
         page = await self.client.new_page(blocked_resources=["media", "image", "font"])
 
         logger.debug('📨 Request "Trending" page')
@@ -30,13 +31,13 @@ class Trending:
         )
         _ = await self.client.goto(
             "/foryou",
-            query_params={"lang": lang},
+            query_params={"lang": self.lang},
             page=page,
             wait_until="networkidle",
         )
         logger.debug('📭 Got response from "Trending" page')
 
-        pbar = tqdm(total=amount, desc=f"📈 Getting trending {lang}")
+        pbar = tqdm(total=amount, desc=f"📈 Getting trending {self.lang}")
         pbar.n = min(len(result), amount)
         pbar.refresh()
 

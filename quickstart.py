@@ -1,5 +1,7 @@
 import asyncio
+
 from tiktokpy import TikTokPy
+
 
 async def main():
     async with TikTokPy() as bot:
@@ -31,5 +33,6 @@ async def main():
             print("Likes: ", item.stats.likes)
 
         # and many other things 😉
+
 
 asyncio.run(main())

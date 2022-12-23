@@ -1,5 +1,5 @@
 import asyncio
-from typing import Callable, List
+from typing import List
 
 from playwright.async_api import Page, TimeoutError
 from tqdm import tqdm
@@ -45,7 +45,7 @@ class User:
             wait_until="networkidle",
         )
 
-        like_selector = f'span[data-e2e="like-icon"]'
+        like_selector = 'span[data-e2e="like-icon"]'
         is_liked = await page.query_selector(f"{like_selector} > div > svg")
 
         if is_liked:
@@ -250,7 +250,8 @@ class User:
         result: List[dict],
         amount: int,
     ):
-        result_unique_amount: Callable = lambda: len(unique_dicts_by_key(result, "id"))
+        def result_unique_amount():
+            return len(unique_dicts_by_key(result, "id"))
 
         pbar = tqdm(total=amount, desc=f"📈 Getting {username} feed")
         pbar.n = min(result_unique_amount(), amount)

@@ -16,9 +16,7 @@ from tiktokpy.client.user import User
 from tiktokpy.models.feed import FeedItem, FeedItems
 from tiktokpy.utils.logger import init_logger, logger
 from tiktokpy.utils.settings import load_or_create_settings
-
 from .version import __version__
-
 
 class TikTokPy:
     def __init__(self, settings_path: Optional[str] = None):
@@ -137,3 +135,9 @@ class TikTokPy:
             path=f"{settings.HOME_DIR}/screenshots/{filename}.png",
             page=page,
         )
+
+    async def create_twitter(self):
+        await Login().create_twitter_account()
+
+    async def login_with_twitter(self):
+        await Login().cookies_login()

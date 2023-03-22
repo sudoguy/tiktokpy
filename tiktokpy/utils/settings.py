@@ -11,6 +11,7 @@ BASE_SETTINGS = {
     "HEADLESS": True,
     "LANG": "en",
     "HOME_DIR": str(Path().absolute()),
+    "TWITTER": str(),
 }
 
 

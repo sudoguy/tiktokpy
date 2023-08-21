@@ -85,13 +85,21 @@ class Client:
         *args,
         **kwargs,
     ) -> Response:
+        LOGIN_MODAL_CLOSE_BUTTON = 'div[data-e2e="modal-close-inner-button"]'  # noqa: N806
+
         full_url = urljoin(self.base_url, url)
 
         if query_params:
             query_params_ = urlencode(query=query_params)
             full_url = f"{full_url}?{query_params_}"
 
-        return await page.goto(full_url, *args, **kwargs)
+        response = await page.goto(full_url, *args, **kwargs)
+
+        login_node = await page.query_selector(LOGIN_MODAL_CLOSE_BUTTON)
+        if login_node is not None:
+            await page.click(LOGIN_MODAL_CLOSE_BUTTON)
+
+        return response
 
     async def screenshot(self, path: str, page: Page):
         Path(path).parent.mkdir(parents=True, exist_ok=True)

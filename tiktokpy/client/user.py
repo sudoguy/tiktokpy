@@ -42,7 +42,6 @@ class User:
         await self.client.goto(
             f"/@{username}/video/{video_id}",
             page=page,
-            wait_until="networkidle",
         )
 
         like_selector = 'span[data-e2e="like-icon"]'
@@ -83,7 +82,6 @@ class User:
         await self.client.goto(
             f"/@{username}/video/{video_id}",
             page=page,
-            wait_until="networkidle",
         )
 
         like_selector = f'{FEED_LIST_ITEM}:first-child span[data-e2e="like-icon"]'
@@ -124,7 +122,6 @@ class User:
         await self.client.goto(
             f"/@{username.lstrip('@')}",
             page=page,
-            wait_until="networkidle",
         )
 
         follow_title: str = await page.eval_on_selector(
@@ -167,7 +164,6 @@ class User:
         await self.client.goto(
             f"/@{username.lstrip('@')}",
             page=page,
-            wait_until="networkidle",
         )
 
         follow_title: str = await page.eval_on_selector(
@@ -191,13 +187,12 @@ class User:
         await page.close()
 
     async def feed(self, username: str, amount: int) -> List[dict]:
-        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
+        page: Page = await self.client.new_page()
         logger.debug(f"📨 Request {username} feed")
 
         _ = await self.client.goto(
             f"/search/user?q={username.lstrip('@')}",
             page=page,
-            wait_until="networkidle",
         )
         username_selector = SEARCH_USERNAME.format(username)
 

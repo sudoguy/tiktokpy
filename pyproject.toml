@@ -29,14 +29,14 @@ classifiers = [
 tiktokpy = "tiktokpy.cli:app"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 loguru = "^0.6.0"
 pydantic = "^1.6.1"
 tqdm = "^4.48.0"
 parsel = { version ="^1.6.0", optional = true }
 dynaconf = "^3.0.0"
 humanize = "^4.0.0"
-typer = "^0.4.0"
+typer = "^0.9.0"
 playwright = "^1.18.2"
 playwright-stealth = "^1.0.5"
 
@@ -45,31 +45,20 @@ html = ["parsel"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.0"
-black = "^22.1.0"
+black = "^23.7.0"
 pytest-cov = "^4.0.0"
 pytest-mock = "^3.2.0"
-pre-commit = "^2.6.0"
-flake8 = "^5.0.0"
-flake8-blind-except = "^0.2.1"
-flake8-commas = "^2.0.0"
-flake8-comprehensions = "^3.2.0"
-flake8-deprecated = "^2.0.1"
-flake8-mutable = "^1.2.0"
-flake8-tidy-imports = "^4.0.0"
-flake8-print = "^5.0.0"
+pre-commit = "^3.3.3"
 isort = "^5.1.4"
 mypy = "*"
 bump2version = "^1.0.0"
-pytest-asyncio = "^0.20.2"
-flake8-broken-line = "^0.6.0"
-flake8-bugbear = "^22.7.1"
-flake8-logging-format = "^0.9.0"
-flake8-pytest-style = "^1.4.0"
+pytest-asyncio = "^0.21.1"
 pylint = "^2.7.2"
+ruff = "^0.0.285"
 
 [tool.black]
 line-length = 100
-target-version = ['py36', 'py37', 'py38']
+target-version = ['py38']
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -101,20 +90,84 @@ exclude = [
     '.venv',
     '.eggs',
     '*.egg',
+    'quickstart.py',
 ]
 ignore = [
+    "RUF001", # we use emojies
     "E501",  # line too long, handled by black
     "C901",  # too complex
 ]
+
+
 line-length = 100
 select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    # "I",  # isort
-    "C",  # flake8-comprehensions
-    "B",  # flake8-bugbear
+    # pycodestyle
+    "E",
+    # pyflakes
+    "F",
+    # bugbear
+    "B",
+    # mccabe and flake8-comprehensions
+    "C",
+    # isort
+    "I",
+    # pep8-naming
+    "N",
+    # pyupgrade
+    "UP",
+    # bandit
+    "S",
+    # flake8-blind-except
+    "BLE",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-errmsg
+    "EM",
+    # flake8-implicit-str-concat
+    "ISC",
+    # flake8-logging-format
+    "G",
+    # flake8-no-pep420
+    "INP",
+    # flake8-pie
+    "PIE",
+    # flake8-print
+    "T20",
+    # flake8-pytest-style
+    "PT",
+    # flake8-quotes
+    "Q",
+    # flake8-raise
+    "RSE",
+    # flake8-self
+    "SLF",
+    # flake8-simplify
+    "SIM",
+    # flake8-unused-arguments
+    "ARG",
+    # flake8-use-pathlib
+    "PTH",
+    # eradicate
+    "ERA",
+    # pygrep-hooks
+    "PGH",
+    # Pylint
+    "PL",
+    # tryceratops
+    "TRY",
+    # Ruff-specific rules
+    "RUF",
 ]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["I", "F"]
+unfixable = ["PT"]
+
+[tool.ruff.per-file-ignores]
+"tests/*" = ["S", "PLR"]
+
 
 [tool.ruff.mccabe]
 max-complexity = 6

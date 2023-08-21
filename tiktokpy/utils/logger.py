@@ -1,13 +1,10 @@
 import logging
 import sys
 
-from loguru import logger as base_logger
-
-logger = base_logger
+from loguru import logger
 
 
 def init_logger(log_level: int = logging.INFO):
-    global logger
     logging.disable(logging.CRITICAL)
     logger.remove()
     logger.add(

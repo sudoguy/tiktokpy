@@ -1,4 +1,4 @@
-from typing import List
+from typing import ClassVar, List
 
 from pydantic import BaseModel, HttpUrl
 
@@ -12,7 +12,7 @@ class AuthorInfo(BaseModel):
     is_verified: bool
 
     class Config:
-        fields = {
+        fields: ClassVar[dict] = {
             "username": "uniqueId",
             "avatar": "avatarLarger",
             "is_verified": "verified",
@@ -28,7 +28,7 @@ class MusicInfo(BaseModel):
     cover: str = ""
 
     class Config:
-        fields = {
+        fields: ClassVar[dict] = {
             "is_original": "original",
             "author_name": "authorName",
             "link": "playUrl",
@@ -43,7 +43,7 @@ class StatisticsInfo(BaseModel):
     shares: int
 
     class Config:
-        fields = {
+        fields: ClassVar[dict] = {
             "likes": "diggCount",
             "shares": "shareCount",
             "comments": "commentCount",
@@ -63,7 +63,7 @@ class ChallengeInfo(BaseModel):
     cover_larger: str = ""
 
     class Config:
-        fields = {
+        fields: ClassVar[dict] = {
             "profile_thumb": "profileThumb",
             "profile_medium": "profileMedium",
             "profile_larger": "profileLarger",
@@ -84,7 +84,7 @@ class VideoInfo(BaseModel):
     download_addr: HttpUrl
 
     class Config:
-        fields = {
+        fields: ClassVar[dict] = {
             "play_addr": "playAddr",
             "download_addr": "downloadAddr",
         }
@@ -105,7 +105,7 @@ class FeedItem(BaseModel):
     challenges: List[ChallengeInfo] = []
 
     class Config:
-        fields = {
+        fields: ClassVar[dict] = {
             "create_time": "createTime",
         }
 

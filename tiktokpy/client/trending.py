@@ -10,6 +10,7 @@ from tiktokpy.utils.client import catch_response_and_store
 from tiktokpy.utils.logger import logger
 
 FEED_LIST_ITEM = 'div[data-e2e="recommend-list-item-container"]'
+FEED_LIST_ITEM_FIRST_CHILD = f"{FEED_LIST_ITEM}:first-child"
 FEED_LIST_ITEM_LAST_CHILD = f"{FEED_LIST_ITEM}:last-child"
 
 
@@ -19,7 +20,7 @@ class Trending:
         self.lang = lang or settings.get("LANG")
 
     async def feed(self, amount: int):
-        page = await self.client.new_page(blocked_resources=["media", "image", "font"])
+        page = await self.client.new_page()
 
         logger.debug('📨 Request "Trending" page')
 
@@ -33,7 +34,6 @@ class Trending:
             "/foryou",
             query_params={"lang": self.lang},
             page=page,
-            wait_until="networkidle",
         )
         logger.debug('📭 Got response from "Trending" page')
 
@@ -44,16 +44,20 @@ class Trending:
         try:
             while len(result) < amount:
                 if len(result) != 0:
-                    timeout = random.randint(5, 10)
+                    timeout = random.randint(5, 10)  # noqa: S311
+                    logger.info(
+                        "⌛️ Waiting for {timeout} seconds",
+                        timeout=timeout,
+                    )
                     await page.wait_for_timeout(timeout * 1000)
 
                 logger.debug("🖱 Trying to scroll to last video item")
 
                 await page.wait_for_selector(FEED_LIST_ITEM_LAST_CHILD)
 
-                scroll_command = "document.querySelector('{selector}').scrollIntoView();"
-                await page.evaluate(scroll_command.format(selector=FEED_LIST_ITEM_LAST_CHILD))
-                await page.wait_for_timeout(1_000)
+                await page.keyboard.down("End")
+                await page.mouse.wheel(0, -300)
+                await page.mouse.wheel(0, 600)
 
                 elements = await page.query_selector_all(FEED_LIST_ITEM)
                 logger.debug(f"🔎 Found {len(elements)} items on page")
@@ -61,18 +65,8 @@ class Trending:
 
                 pbar.n = min(len(result), amount)
                 pbar.refresh()
-        except Exception:
+        except Exception:  # noqa: BLE001
             logger.exception("Something went wrong. Interrupt work")
-
-            # if len(elements) < 500:
-            #     logger.debug("🔻 Too less for clearing page")
-            #     continue
-
-            # await page.eval_on_selector_all(
-            #     f"{FEED_LIST_ITEM_CONTAINER}:not(:last-child)",
-            #     expression="(elements) => elements.forEach(el => el.remove())",
-            # )
-            # logger.debug(f"🎉 Cleaned {len(elements) - 1} items from page")
 
         await page.close()
         pbar.close()

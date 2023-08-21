@@ -24,16 +24,16 @@ class Login:
             # going to "View profile" page
             await page.click('ul[data-e2e="profile-popup"] > li:first-child')
 
-            await page.wait_for_selector('h2[data-e2e="user-title"]', timeout=0)
+            await page.wait_for_selector('h1[data-e2e="user-title"]', timeout=0)
 
             username = await page.eval_on_selector(
-                'h2[data-e2e="user-title"]',
+                'h1[data-e2e="user-title"]',
                 expression="element => element.textContent",
             )
             username = username.strip()
 
             sub_title = await page.eval_on_selector(
-                'h1[data-e2e="user-subtitle"]',
+                'h2[data-e2e="user-subtitle"]',
                 expression="element => element.textContent",
             )
 
@@ -43,7 +43,11 @@ class Login:
 
         loaders.write(
             f"{settings.HOME_DIR}/settings.toml",
-            {**BASE_SETTINGS, **{"COOKIES": json.dumps(cookies), "USERNAME": username}},
+            {
+                **BASE_SETTINGS,
+                "COOKIES": json.dumps(cookies),
+                "USERNAME": username,
+            },
             env="default",
         )
 

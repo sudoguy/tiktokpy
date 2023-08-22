@@ -4,9 +4,10 @@ TikTokPy
 <p align="center">
  <em>Tooling that <b>automates</b> your social media interactions to “farm” Likes and Followers on TikTok</em></p>
 
+
 <p align="center">
-<a href="https://travis-ci.com/sudoguy/tiktokpy">
-    <img src="https://travis-ci.com/sudoguy/tiktokpy.svg?branch=master" alt="Build Status">
+<a href="https://github.com/sudoguy/tiktokpy/actions/workflows/test_and_publish.yml">
+    <img src="https://github.com/sudoguy/tiktokpy/actions/workflows/test_and_publish.yml/badge.svg" alt="Build Status">
 </a>
 <a href="https://pypi.org/project/tiktokpy/">
     <img src="https://badge.fury.io/py/tiktokpy.svg" alt="Package version">

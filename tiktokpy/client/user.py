@@ -25,7 +25,7 @@ class User:
         self.client = client
 
     async def like(self, username: str, video_id: str):
-        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
+        page: Page = await self.client.new_page()
         logger.debug(f"👥 Like video id {video_id} of @{username}")
 
         like_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
@@ -45,27 +45,24 @@ class User:
         )
 
         like_selector = 'span[data-e2e="like-icon"]'
-        is_liked = await page.query_selector(f"{like_selector} > div > svg")
+        liked_heart_selector = 'button svg g > path[fill="rgb(254,44,85)"]'
+        is_liked = await page.query_selector(liked_heart_selector)
 
         if is_liked:
             logger.info(f"😏 @{username}'s video {video_id} already liked")
             await page.close()
-
             return
 
         await page.click(like_selector)
+        await like_info_queue.get()
+        await asyncio.sleep(1)
 
-        like_info = await like_info_queue.get()
-
-        if like_info["status_code"] == 0:
-            logger.info(f"👍 @{username}'s video {video_id} liked")
-        else:
-            logger.warning(f"⚠️  @{username}'s video {video_id} probably not liked")
+        logger.info(f"👍 @{username}'s video {video_id} liked")
 
         await page.close()
 
     async def unlike(self, username: str, video_id: str):
-        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
+        page: Page = await self.client.new_page()
         logger.debug(f"👥 Unlike video id {video_id} of @{username}")
 
         like_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
@@ -83,29 +80,25 @@ class User:
             f"/@{username}/video/{video_id}",
             page=page,
         )
+        like_selector = 'span[data-e2e="like-icon"]'
+        liked_heart_selector = 'button svg g > path[fill="rgb(254,44,85)"]'
+        is_liked = await page.query_selector(liked_heart_selector)
 
-        like_selector = f'{FEED_LIST_ITEM}:first-child span[data-e2e="like-icon"]'
-        is_unliked = not await page.query_selector(f"{like_selector} > div > svg")
-
-        if is_unliked:
+        if not is_liked:
             logger.info(f"😏 @{username}'s video {video_id} already unliked")
             await page.close()
 
             return
 
         await page.click(like_selector)
+        await like_info_queue.get()
 
-        unlike_info = await like_info_queue.get()
-
-        if unlike_info["status_code"] == 0:
-            logger.info(f"👎 @{username}'s video {video_id} unliked")
-        else:
-            logger.warning(f"⚠️  @{username}'s video {video_id} probably not unliked")
+        logger.info(f"👎 @{username}'s video {video_id} unliked")
 
         await page.close()
 
     async def follow(self, username: str):
-        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
+        page: Page = await self.client.new_page()
         logger.debug(f"👥 Follow {username}")
 
         follow_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
@@ -147,7 +140,7 @@ class User:
         await page.close()
 
     async def unfollow(self, username: str):
-        page: Page = await self.client.new_page(blocked_resources=["image", "media", "font"])
+        page: Page = await self.client.new_page()
         logger.debug(f"👥 Unfollow {username}")
 
         unfollow_info_queue: asyncio.Queue = asyncio.Queue(maxsize=1)

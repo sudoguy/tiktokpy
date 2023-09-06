@@ -81,13 +81,11 @@ class Client:
         url: str,
         page: Page,
         query_params: Optional[dict] = None,
-        wait_until: Optional[
-            Literal[
-                "commit",
-                "domcontentloaded",
-                "load",
-                "networkidle",
-            ]
+        wait_until: Literal[
+            "commit",
+            "domcontentloaded",
+            "load",
+            "networkidle",
         ] = "networkidle",
         *args,
         **kwargs,
@@ -101,7 +99,7 @@ class Client:
             query_params_ = urlencode(query=query_params)
             full_url = f"{full_url}?{query_params_}"
 
-        response = await page.goto(full_url, wait_until=wait_until, *args, **kwargs)
+        response = await page.goto(full_url, *args, wait_until=wait_until, **kwargs)
 
         login_node = await page.query_selector(LOGIN_MODAL_CLOSE_BUTTON)
         if login_node is not None:

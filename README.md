@@ -39,7 +39,7 @@ async def main():
             await bot.unfollow(item.author.username)
 
         # 😏 getting user's feed
-        user_feed_items = await bot.user_feed(username="justinbieber", amount=5)
+        user_feed_items = await bot.user_feed(username="tiktok", amount=5)
 
         for item in user_feed_items:
             # 🎧 get music title, cover, link, author name..
@@ -69,10 +69,8 @@ pip install tiktokpy
 Install browser by playwright
 
 ```shell
-playwright install chromium
+playwright install firefox
 ```
-
-If you have little to no knowledge in programming: Read this Guide ["How to use TiktokPy Python Bot"](https://my-tailwind-nextjs-starter-blog.vercel.app/blog/how-to-use-tiktokpy-for-beginner-programmers-indepth-guide) for beginners
 
 ## Run
 

@@ -1,7 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Literal, Optional
 from urllib.parse import urlencode, urljoin
 
 from dynaconf import settings
@@ -35,7 +35,7 @@ class Client:
             ],
         }
 
-        self.browser: Browser = await self.playwright.chromium.launch(**params)
+        self.browser: Browser = await self.playwright.firefox.launch(**params)
         self.context = await self.browser.new_context()
         await self.context.add_cookies(self.cookies)
         logger.debug(f"🎉 Browser launched. Options: {params}")
@@ -66,7 +66,6 @@ class Client:
                 hairline=False,
             ),
         )
-
         if blocked_resources is not None:
             await page.route(
                 "**/*",
@@ -82,10 +81,17 @@ class Client:
         url: str,
         page: Page,
         query_params: Optional[dict] = None,
+        wait_until: Literal[
+            "commit",
+            "domcontentloaded",
+            "load",
+            "networkidle",
+        ] = "networkidle",
         *args,
         **kwargs,
     ) -> Response:
         LOGIN_MODAL_CLOSE_BUTTON = 'div[data-e2e="modal-close-inner-button"]'  # noqa: N806
+        CAPTCHA_MODAL = "#tiktok-verify-ele > div"  # noqa: N806
 
         full_url = urljoin(self.base_url, url)
 
@@ -93,11 +99,17 @@ class Client:
             query_params_ = urlencode(query=query_params)
             full_url = f"{full_url}?{query_params_}"
 
-        response = await page.goto(full_url, *args, **kwargs)
+        response = await page.goto(full_url, *args, wait_until=wait_until, **kwargs)
 
         login_node = await page.query_selector(LOGIN_MODAL_CLOSE_BUTTON)
         if login_node is not None:
             await page.click(LOGIN_MODAL_CLOSE_BUTTON)
+
+        captcha_node = await page.query_selector(CAPTCHA_MODAL)
+        while captcha_node:
+            await asyncio.sleep(1)
+            captcha_node = await page.query_selector(CAPTCHA_MODAL)
+            logger.info("🚨 Waiting captcha 🚨")
 
         return response
 

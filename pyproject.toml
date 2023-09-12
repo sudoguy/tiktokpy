@@ -30,7 +30,7 @@ tiktokpy = "tiktokpy.cli:app"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-loguru = "^0.6.0"
+loguru = ">=0.6,<0.8"
 pydantic = "^1.6.1"
 tqdm = "^4.48.0"
 parsel = { version ="^1.6.0", optional = true }

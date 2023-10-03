@@ -54,7 +54,7 @@ mypy = "*"
 bump2version = "^1.0.0"
 pytest-asyncio = "^0.21.1"
 pylint = "^2.7.2"
-ruff = "^0.0.285"
+ruff = "^0.0.292"
 
 [tool.black]
 line-length = 100

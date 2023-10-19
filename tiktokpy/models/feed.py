@@ -95,19 +95,33 @@ class VideoInfo(BaseModel):
 
 
 class ImageUrls(BaseModel):
-    urlList: List[HttpUrl]
+    url_list: List[HttpUrl]
+
+    class Config:
+        fields: ClassVar[dict] = {
+            "url_list": "urlList"            
+        }
+
 
 
 class ImageInfo(BaseModel):
-    imageHeight: int
-    imageWidth: int
-    imageURL: ImageUrls
+    image_height: int
+    image_width: int
+    image_url: ImageUrls
+
+    class Config:
+        fields: ClassVar[dict] = {
+            "image_url": "imageURL",   
+            "image_width": "imageWidth",
+            "image_height": "imageHeight"            
+        }
+
 
 
 class ImagePostlInfo(BaseModel):
     cover: ImageInfo
     images: List[ImageInfo]
-    shareCover: ImageInfo
+
 
 
 class FeedItem(BaseModel):
@@ -124,6 +138,7 @@ class FeedItem(BaseModel):
     class Config:
         fields: ClassVar[dict] = {
             "create_time": "createTime",
+            "image_post": "imagePost"
         }
 
 

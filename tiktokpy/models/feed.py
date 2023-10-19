@@ -93,18 +93,22 @@ class VideoInfo(BaseModel):
     def original_video_url(self) -> str:
         return f"https://api2.musical.ly/aweme/v1/playwm/?video_id={self.id}"
 
+
 class ImageUrls(BaseModel):
     urlList: List[HttpUrl]
+
 
 class ImageInfo(BaseModel):
     imageHeight: int
     imageWidth: int
     imageURL: ImageUrls
 
+
 class ImagePostlInfo(BaseModel):
     cover: ImageInfo
     images: List[ImageInfo]
     shareCover: ImageInfo
+
 
 class FeedItem(BaseModel):
     id: str

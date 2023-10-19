@@ -117,11 +117,9 @@ class ImageInfo(BaseModel):
         }
 
 
-
 class ImagePostlInfo(BaseModel):
     cover: ImageInfo
     images: List[ImageInfo]
-
 
 
 class FeedItem(BaseModel):
@@ -132,7 +130,7 @@ class FeedItem(BaseModel):
     music: MusicInfo
     stats: StatisticsInfo
     video: VideoInfo
-    imagePost: ImagePostlInfo = None
+    image_post: ImagePostlInfo = None
     challenges: List[ChallengeInfo] = []
 
     class Config:

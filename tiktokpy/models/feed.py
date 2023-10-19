@@ -98,10 +98,7 @@ class ImageUrls(BaseModel):
     url_list: List[HttpUrl]
 
     class Config:
-        fields: ClassVar[dict] = {
-            "url_list": "urlList"            
-        }
-
+        fields: ClassVar[dict] = {"url_list": "urlList"}
 
 
 class ImageInfo(BaseModel):
@@ -111,9 +108,9 @@ class ImageInfo(BaseModel):
 
     class Config:
         fields: ClassVar[dict] = {
-            "image_url": "imageURL",   
+            "image_url": "imageURL",
             "image_width": "imageWidth",
-            "image_height": "imageHeight"            
+            "image_height": "imageHeight",
         }
 
 
@@ -134,10 +131,7 @@ class FeedItem(BaseModel):
     challenges: List[ChallengeInfo] = []
 
     class Config:
-        fields: ClassVar[dict] = {
-            "create_time": "createTime",
-            "image_post": "imagePost"
-        }
+        fields: ClassVar[dict] = {"create_time": "createTime", "image_post": "imagePost"}
 
 
 class FeedItems(BaseModel):

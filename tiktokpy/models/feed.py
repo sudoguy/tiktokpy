@@ -1,4 +1,4 @@
-from typing import ClassVar, List
+from typing import ClassVar, List, Optional
 
 from pydantic import BaseModel, HttpUrl
 
@@ -80,8 +80,8 @@ class VideoInfo(BaseModel):
     duration: int
     ratio: str
     cover: HttpUrl
-    play_addr: HttpUrl
-    download_addr: HttpUrl
+    play_addr: Optional[HttpUrl]
+    download_addr: Optional[HttpUrl]
 
     class Config:
         fields: ClassVar[dict] = {
@@ -93,6 +93,18 @@ class VideoInfo(BaseModel):
     def original_video_url(self) -> str:
         return f"https://api2.musical.ly/aweme/v1/playwm/?video_id={self.id}"
 
+class ImageUrls(BaseModel):
+    urlList: List[HttpUrl]
+
+class ImageInfo(BaseModel):
+    imageHeight: int
+    imageWidth: int
+    imageURL: ImageUrls
+
+class ImagePostlInfo(BaseModel):
+    cover: ImageInfo
+    images: List[ImageInfo]
+    shareCover: ImageInfo
 
 class FeedItem(BaseModel):
     id: str
@@ -102,6 +114,7 @@ class FeedItem(BaseModel):
     music: MusicInfo
     stats: StatisticsInfo
     video: VideoInfo
+    imagePost: ImagePostlInfo = None
     challenges: List[ChallengeInfo] = []
 
     class Config:

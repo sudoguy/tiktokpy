@@ -134,7 +134,7 @@ class FeedItem(BaseModel):
         fields: ClassVar[dict] = {
             "create_time": "createTime",
             "image_post": "imagePost",
-    }
+        }
 
 
 class FeedItems(BaseModel):

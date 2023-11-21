@@ -131,7 +131,10 @@ class FeedItem(BaseModel):
     challenges: List[ChallengeInfo] = []
 
     class Config:
-        fields: ClassVar[dict] = {"create_time": "createTime", "image_post": "imagePost"}
+        fields: ClassVar[dict] = {
+            "create_time": "createTime",
+            "image_post": "imagePost",
+    }
 
 
 class FeedItems(BaseModel):
